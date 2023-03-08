@@ -73,7 +73,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
         return cart.voices.map((voice, i) => <CartItem
           key={i}
           index={i}
-          number={cart.bank * 32 + i}
+          number={cart.bank * 32 + i + 1}
           name={voice.name}
           isDX7II={voice.version == 2}
           dataType="DX7Voice"
@@ -122,7 +122,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
         .catch(handleError)
     } else if (actionId == 'revert') {
       this.setState({
-        editedCart: this.props.cart,
+        editedCart: this.props.cart.clone(),
         changed: false,
       })
     }
