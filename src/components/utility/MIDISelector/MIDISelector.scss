@@ -1,0 +1,11 @@
+@import 'theme/vars';
+
+.MIDISelector {
+  color: $textColorD1;
+
+  label {
+    display: inline-block;
+    min-width: 90px;
+    margin-right: 8px;
+  }
+}

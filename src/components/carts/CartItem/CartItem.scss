@@ -1,0 +1,82 @@
+@import 'theme/vars';
+
+.CartItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background: $bgColor;
+  }
+
+  > * {
+    margin-right: 8px;
+  }
+}
+
+.CartItem_dragged {
+  > * {
+    opacity: 0.1;
+  }
+}
+
+.CartItem__dragHint {
+  flex-shrink: 0;
+  margin-right: 0;
+  padding-right: 8px;
+  cursor: move;
+}
+
+.CartItem__dragIndicator {
+  color: $textColorD1;
+  margin-right: 8px;
+  vertical-align: top;
+}
+
+.CartItem__number {
+  display: inline-block;
+  width: 16px;
+  text-align: right;
+  color: $accentColor1;
+  font-size: 14px;
+}
+
+.CartItem__name {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.CartItem__dx7ii {
+  flex-shrink: 0;
+}
+
+// drag & drop stuff
+.CartItem__dragAreaBefore {
+  position: absolute;
+  box-sizing: border-box;
+  top: -5px;
+  height: 10px;
+  padding: 3px 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background-clip: content-box;
+}
+
+.CartItem__dragAreaItem {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.CartItem__dragAreaBefore_active {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.CartItem__dragAreaItem_active {
+  background-color: rgba($accentColor4, 0.5);
+}

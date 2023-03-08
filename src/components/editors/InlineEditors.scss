@@ -1,0 +1,44 @@
+@import 'theme/vars';
+
+.InlineEditor {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $bgColorL1;
+  padding: 16px;
+}
+
+.InlineEditor__title {
+  text-align: center;
+  margin: -4px 0 4px;
+  font-size: 14px;
+
+  i {
+    font-style: normal;
+    color: $accentColor1;
+  }
+}
+
+.InlineEditor__content {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+
+  label {
+    color: $textColorD1;
+  }
+}
+
+.InlineEditor__actions {
+  display: flex;
+  gap: 16px;
+}
+
+.InlineDX7VoiceEditor__voiceName {
+  font-family: monospace;
+  width: 10.4ch;
+}
+
+.InlineDX7VoiceEditor__dx7iiFeatures {
+  max-width: 50vw;
+}

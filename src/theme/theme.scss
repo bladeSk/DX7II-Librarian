@@ -1,0 +1,54 @@
+@import 'vars';
+
+body {
+  background: $bgColor;
+  color: $textColor;
+  margin: 0;
+}
+
+body,
+input,
+textarea,
+select,
+button {
+  font: 16px/1.5 'Helvetica Neue', 'Helvetica', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+button,
+input[type=submit] {
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+*:focus {
+  outline: none;
+}
+
+input[type=text] {
+  padding: 2px 8px;
+}
+
+button {
+  background: $accentColor1;
+  color: $bgColor;
+  border-radius: 100px;
+  border: 0;
+  padding: 4px 8px;
+  min-width: 32px;
+
+  &:hover {
+    background: lighten($accentColor1, 10%);
+  }
+}
+
+.button_danger {
+  background: $accentColor3;
+
+  &:hover {
+    background: lighten($accentColor3, 10%);
+  }
+}
