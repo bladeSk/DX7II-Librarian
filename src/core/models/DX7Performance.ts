@@ -20,6 +20,10 @@ export class DX7Performance {
     }
   }
 
+  clone(): DX7Performance {
+    return new DX7Performance(this.perfData.slice(0))
+  }
+
   resetToInitVoice() {
     this.perfData = DEFAULT_PERF.slice(0)
   }

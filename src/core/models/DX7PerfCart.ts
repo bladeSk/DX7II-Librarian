@@ -34,6 +34,42 @@ export class DX7PerfCart {
     return cart
   }
 
+  clone(): DX7PerfCart {
+    let cart = new DX7PerfCart()
+    cart.perfs = this.perfs.slice(0)
+    return cart
+  }
+
+  insertPerfAt(newPerf: DX7Performance, index: number): DX7PerfCart {
+    if (this.perfs.includes(newPerf)) { // just move the sound within the cart
+      let oldPerf = newPerf
+      newPerf = oldPerf.clone()
+
+      this.perfs = this.perfs.slice(0, index).concat(newPerf, this.perfs.slice(index))
+        .filter(v => v != oldPerf)
+    } else { // insert and discard the last sound
+      this.perfs = this.perfs.slice(0, index).concat(newPerf.clone(), this.perfs.slice(index, 31))
+    }
+
+    return this
+  }
+
+  replacePerfAt(newPerf: DX7Performance, index: number): DX7PerfCart {
+    this.perfs = this.perfs.map((perf, i) => {
+      return index === i ? newPerf.clone() : perf
+    })
+
+    return this
+  }
+
+  replacePerf(oldPerf: DX7Performance, newPerf: DX7Performance): DX7PerfCart {
+    this.perfs = this.perfs.map((perf) => {
+      return perf == oldPerf ? newPerf : perf
+    })
+
+    return this
+  }
+
   buildCart(): Uint8Array {
     let dataArr = this.perfs.map(perf => perf.perfData)
     dataArr.unshift(PERF_HEADER)
@@ -42,12 +78,6 @@ export class DX7PerfCart {
     let perfData = mergeUint8Arrays(dataArr)
     perfData[perfData.length - 2] = calcChecksum(perfData, PERF_HEADER.length, -2)
     return perfData
-  }
-
-  clone(): DX7PerfCart {
-    let cart = new DX7PerfCart()
-    cart.perfs = this.perfs.slice(0)
-    return cart
   }
 }
 

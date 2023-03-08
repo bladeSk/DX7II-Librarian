@@ -1,13 +1,25 @@
 @import 'theme/vars';
 
+.CartViewerDX7Voice {
+  width: 380px;
+}
+
 .CartViewerDX7Voice .DraggableWindow__content {
   columns: 2;
   column-gap: 24px;
 }
 
+.CartViewerDX7Performance {
+  width: 440px;
+}
+
 .CartViewerDX7Performance .DraggableWindow__content {
   columns: 2;
   column-gap: 24px;
+}
+
+.CartViewerDX7Performance .CartItem__number {
+  color: $accentColor2;
 }
 
 .CartViewer__bankToggle {

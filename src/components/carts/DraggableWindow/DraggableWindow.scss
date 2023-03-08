@@ -2,7 +2,7 @@
 
 .DraggableWindow {
   position: absolute;
-  width: 380px;
+  width: 320px;
   border: solid 1px $accentColor1;
   background: $bgColorL1;
   box-shadow: 0 0 20px 0 rgba($bgColor, 0.5);
@@ -13,6 +13,21 @@
 
   .DraggableWindow__header {
     background: $accentColor2;
+  }
+
+  .DraggableWindow__action {
+    background: $accentColor2D1;
+
+    &:hover {
+      background: $textColor;
+      color: $bgColor;
+    }
+  }
+}
+
+.DraggableWindow_variant2.DraggableWindow_actionsOpen {
+  .DraggableWindow__actionsIcon {
+    background: $accentColor2D1;
   }
 }
 

@@ -7,6 +7,7 @@ import { DX7PerfCart } from 'core/models/DX7PerfCart'
 import { handleError } from 'core/utils/errorHandling'
 import { saveFileAs } from 'core/utils/fileUtils'
 import CartItem from '../CartItem/CartItem'
+import { DX7Performance } from 'core/models/DX7Performance'
 import './CartViewer.scss'
 
 export interface Props extends CartViewerProps {
@@ -50,7 +51,10 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     return <DraggableWindow
       className={classNames}
       variant="2"
-      title={file.fileName}
+      title={<>
+        {this.state.changed && <span className="CartViewer__changed">*</span>}
+        {file.fileName}
+      </>}
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
@@ -60,9 +64,19 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       onFocus={this.handleFocus}
       onAction={this.handleAction}
     >
-      {cart.perfs.map((perf, i) => <div key={i}>
-        {perf.name}
-      </div>)}
+      <DragNDropContext.Consumer>{(dragNDropCtx) => {
+        return cart.perfs.map((perf, i) => <CartItem
+          key={i}
+          index={i}
+          number={i + 1}
+          name={perf.name}
+          dataType="DX7Perf"
+          data={perf}
+          dragNDropCtx={dragNDropCtx}
+          onDrop={this.handlePerfDrop}
+          onEdit={(perf) => this.props.onOpenEditor?.('DX7Perf', perf, this.handlePerfUpdateFromEditor)}
+        />)
+      }}</DragNDropContext.Consumer>
     </DraggableWindow>
   }
 
@@ -104,5 +118,28 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
         changed: false,
       })
     }
+  }
+
+  private handlePerfDrop = (perf: DX7Performance, index: number, where: 'before' | 'on') => {
+    if (where == 'before') {
+      this.setState({
+        editedCart: this.state.editedCart!.clone().insertPerfAt(perf, index),
+        changed: true,
+      })
+    } else if (where == 'on') {
+      this.setState({
+        editedCart: this.state.editedCart!.clone().replacePerfAt(perf, index),
+        changed: true,
+      })
+    }
+  }
+
+  private handlePerfUpdateFromEditor = (oldPerf: DX7Performance, newPerf: DX7Performance) => {
+    if (!this.state.editedCart?.perfs.includes(oldPerf)) return
+
+    this.setState({
+      editedCart: this.state.editedCart!.clone().replacePerf(oldPerf, newPerf),
+      changed: true,
+    })
   }
 }

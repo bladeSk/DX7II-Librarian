@@ -13,6 +13,10 @@
   > * {
     margin-right: 8px;
   }
+
+  > *:last-child {
+    margin-right: 0;
+  }
 }
 
 .CartItem_dragged {
@@ -30,7 +34,7 @@
 
 .CartItem__dragIndicator {
   color: $textColorD1;
-  margin-right: 8px;
+  margin-right: 4px;
   vertical-align: top;
 }
 
@@ -40,6 +44,7 @@
   text-align: right;
   color: $accentColor1;
   font-size: 14px;
+  vertical-align: 3%;
 }
 
 .CartItem__name {
