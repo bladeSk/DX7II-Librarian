@@ -47,9 +47,12 @@
   justify-content: center;
   align-items: center;
   position: fixed;
+  z-index: 1000;
   top: 92px;
   bottom: 0;
   left: 0;
   right: 0;
   background: rgba($accentColor1, 0.8);
+  color: $bgColor;
+  font-size: 40px;
 }
