@@ -12,6 +12,7 @@ export interface Props {
   titleExtra?: React.ReactNode
   xPos?: number
   yPos?: number
+  zIndex?: number
   variant?: '1' | '2' | '3'
   onAction?: (actionId: string) => void
   onFocus?: () => void
@@ -61,6 +62,10 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props, prevState: State): void {
     if (this.elmPos[0] != this.props.xPos || this.elmPos[1] != this.props.yPos) {
       this.elmPos = [ this.props.xPos || 0, this.props.yPos || 0 ]
+      this.updatePos()
+    }
+
+    if (this.props.zIndex != prevProps.zIndex) {
       this.updatePos()
     }
   }
@@ -128,6 +133,7 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
 
     this.ref.current.style.left = `${x}px`
     this.ref.current.style.top = `${y}px`
+    this.ref.current.style.zIndex = `${this.props.zIndex || ''}`
   }
 
   private handleHeaderMouseDown = (e: React.MouseEvent) => {
@@ -140,7 +146,6 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
 
   private handleWindowMouseDownCapture = (e: React.MouseEvent) => {
     this.props.onFocus?.()
-    // this messes up other mouse events :(
   }
 
   private handleDocumentMouseDown = (e: MouseEvent) => {

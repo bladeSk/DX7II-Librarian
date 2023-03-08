@@ -62,6 +62,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       >{cart.bank == 0 ? <>1-<br/>32</> : <>33-<br/>64</>}</div>}
       xPos={file.xPos}
       yPos={file.yPos}
+      zIndex={file.zIndex}
       actions={ACTIONS}
       onClose={this.handleClose}
       onMove={this.handleMove}

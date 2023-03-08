@@ -18,4 +18,5 @@ export interface FileWithMeta {
   xPos: number
   yPos: number
   id: string
+  zIndex: number
 }

@@ -48,21 +48,22 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     )
 
     return <DraggableWindow
-    className={classNames}
-    variant="2"
-    title={file.fileName}
-    xPos={file.xPos}
-    yPos={file.yPos}
-    actions={ACTIONS}
-    onClose={this.handleClose}
-    onMove={this.handleMove}
-    onFocus={this.handleFocus}
-    onAction={this.handleAction}
-  >
-    {cart.perfs.map((perf, i) => <div key={i}>
-      {perf.name}
-    </div>)}
-  </DraggableWindow>
+      className={classNames}
+      variant="2"
+      title={file.fileName}
+      xPos={file.xPos}
+      yPos={file.yPos}
+      zIndex={file.zIndex}
+      actions={ACTIONS}
+      onClose={this.handleClose}
+      onMove={this.handleMove}
+      onFocus={this.handleFocus}
+      onAction={this.handleAction}
+    >
+      {cart.perfs.map((perf, i) => <div key={i}>
+        {perf.name}
+      </div>)}
+    </DraggableWindow>
   }
 
   private handleClose = () => {

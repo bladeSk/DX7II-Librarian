@@ -78,6 +78,8 @@ export default class App extends React.PureComponent<Props, State> {
               Promise.all(
                 Array.from(files || []).map(f => f.arrayBuffer())
               ).then((buffers) => {
+                let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
+
                 let filesToAdd: FileWithMeta[] = buffers.map((buf, i) => {
                   let file = files![i]
                   return {
@@ -86,6 +88,7 @@ export default class App extends React.PureComponent<Props, State> {
                     xPos: dragEvt.clientX + i * 24,
                     yPos: dragEvt.clientY - offsetY + i * 24,
                     id: `${+new Date()}_${i}`,
+                    zIndex: maxZIndex + i + 1,
                   }
                 })
 
@@ -111,10 +114,26 @@ export default class App extends React.PureComponent<Props, State> {
   }
 
   private handleFileWindowFocus = (file: FileWithMeta) => {
-    let sysExFiles = this.state.sysExFiles.filter(f => f != file)
-    sysExFiles.push(file)
+    let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
+    if (file.zIndex == maxZIndex) return
 
-    this.setState({ sysExFiles }, () => this.serializeState())
+    let filesInNewOrder = this.state.sysExFiles
+      .sort((a, b) => a.zIndex - b.zIndex)
+      .filter(f => f != file)
+
+    filesInNewOrder.push(file)
+
+    let fileIdToZ = filesInNewOrder.reduce((dict, file, i) => {
+      dict[file.id] = i
+      return dict
+    }, {} as Record<string, number>)
+
+    let sysExFiles = this.state.sysExFiles.map((file) => ({
+      ...file,
+      zIndex: fileIdToZ[file.id] || 0,
+    }))
+
+    this.setState({ sysExFiles })
   }
 
   private handleFileUpdate = (oldFile: FileWithMeta, newFile: FileWithMeta) => {

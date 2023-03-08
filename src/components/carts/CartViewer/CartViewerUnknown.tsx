@@ -34,6 +34,7 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
       title={file.fileName}
       xPos={file.xPos}
       yPos={file.yPos}
+      zIndex={file.zIndex}
       actions={ACTIONS}
       onClose={this.handleClose}
       onMove={this.handleMove}
