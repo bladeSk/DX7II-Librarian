@@ -1,7 +1,7 @@
 {
   "name": "dx7ii-librarian",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,14 +9,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
+    "@aws-sdk/util-base64": "^3.208.0",
+    "@types/file-saver": "^2.0.5",
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/webmidi": "^2.0.7",
     "@vitejs/plugin-react-swc": "^3.0.0",
+    "clsx": "^1.2.1",
+    "file-saver": "^2.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-file-drop": "^3.1.6",
+    "sass": "^1.58.3",
     "typescript": "^4.9.3",
-    "vite": "^4.1.0"
-  }
+    "vite": "^4.1.0",
+    "vite-plugin-svgr": "^2.4.0",
+    "vite-tsconfig-paths": "^4.0.5"
+  },
+  "devDependencies": {}
 }
