@@ -45,10 +45,27 @@ button {
   }
 }
 
-.button_danger {
+.button_acc2 {
+  background: $accentColor2;
+
+  &:hover {
+    background: lighten($accentColor2, 10%);
+  }
+}
+
+.button_danger,
+.button_acc3 {
   background: $accentColor3;
 
   &:hover {
     background: lighten($accentColor3, 10%);
+  }
+}
+
+.button_acc4 {
+  background: $accentColor4;
+
+  &:hover {
+    background: lighten($accentColor4, 10%);
   }
 }

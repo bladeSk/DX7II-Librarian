@@ -157,7 +157,7 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
         <div className="InlineEditor__actions">
           {this.state.changed && <button type="button" onClick={this.handleSaveClick}>✔</button>}
 
-          <button type="button" className="button_danger" onClick={this.handleCancelClick}>✖</button>
+          <button type="button" className="button_acc4" onClick={this.handleCancelClick}>✖</button>
         </div>
       </div>
     </form>
