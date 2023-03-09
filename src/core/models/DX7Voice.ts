@@ -25,14 +25,6 @@ export class DX7Voice {
     if (this.fksData.length != DEFAULT_FKS.length) throw new Error('Incorrect FKS length')
   }
 
-  rename(name: string) {
-    let c: number
-    for (let i = 0; i < 10; i++) {
-      c = name.charCodeAt(i)
-      this.vmemData[118 + i] = c < 32 || c >= 127 ? 32 : c
-    }
-  }
-
   clone(): DX7Voice {
     return new DX7Voice(this.vmemData.slice(0), this.amemData.slice(0), this.fksData.slice(0))
   }
@@ -45,6 +37,14 @@ export class DX7Voice {
 
   get name(): string {
     return String.fromCharCode.apply(null, this.vmemData.slice(118) as any).trimEnd()
+  }
+
+  set name(val: string) {
+    let c: number
+    for (let i = 0; i < 10; i++) {
+      c = val.charCodeAt(i) || 0
+      this.vmemData[118 + i] = c < 32 || c >= 127 ? 32 : c
+    }
   }
 
   get version(): 1 | 2 {

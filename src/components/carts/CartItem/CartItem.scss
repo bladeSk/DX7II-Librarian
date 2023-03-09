@@ -13,10 +13,6 @@
   > * {
     margin-right: 8px;
   }
-
-  > *:last-child {
-    margin-right: 0;
-  }
 }
 
 .CartItem_dragged {
@@ -33,7 +29,7 @@
 }
 
 .CartItem__dragIndicator {
-  color: $textColorD1;
+  color: $textColorD2;
   margin-right: 4px;
   vertical-align: top;
 }
@@ -49,12 +45,13 @@
 
 .CartItem__name {
   flex-grow: 1;
-  white-space: nowrap;
   overflow: hidden;
+  white-space: pre;
 }
 
 .CartItem__dx7ii {
   flex-shrink: 0;
+  margin-right: 4px;
 }
 
 // drag & drop stuff

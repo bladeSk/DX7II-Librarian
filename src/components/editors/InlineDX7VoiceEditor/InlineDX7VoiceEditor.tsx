@@ -46,12 +46,12 @@ export default class InlineDX7VoiceEditor extends React.PureComponent<Props, Sta
       onSubmit={this.handleFormSubmit}
     >
       <div className="InlineEditor__title">
-        Editing voice <i>{this.props.voice.name}</i>
+        Edit voice <i>{this.props.voice.name}</i>
       </div>
 
       <div className="InlineEditor__content">
-        <label>
-          Voice name {}
+        <div className="InlineEditor__field">
+          <label>Voice name</label>
           <input
             className="InlineDX7VoiceEditor__voiceName"
             type="text"
@@ -60,7 +60,7 @@ export default class InlineDX7VoiceEditor extends React.PureComponent<Props, Sta
             value={this.state.nameInput}
             onChange={this.handleNameInputChange}
           />
-        </label>
+        </div>
 
         <div className="InlineDX7VoiceEditor__dx7iiFeatures">
           {dx7iiFeatures.length > 0
@@ -87,7 +87,7 @@ export default class InlineDX7VoiceEditor extends React.PureComponent<Props, Sta
     e?.stopPropagation()
 
     let newVoice = this.props.voice.clone()
-    newVoice.rename(this.state.nameInput)
+    newVoice.name = this.state.nameInput
 
     this.props.onUpdate(this.props.voice, newVoice)
     this.props.onClose()
