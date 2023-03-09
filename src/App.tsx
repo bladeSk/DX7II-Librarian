@@ -8,6 +8,7 @@ import CartViewer from 'components/carts/CartViewer/CartViewer'
 import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
 import DragNDropProvider from 'components/utility/DragNDropProvider/DragNDropProvider'
 import InlineDX7VoiceEditor from 'components/editors/InlineDX7VoiceEditor/InlineDX7VoiceEditor'
+import InlineDX7PerfEditor from 'components/editors/InlineDX7PerfEditor/InlineDX7PerfEditor'
 import './App.scss'
 
 export interface Props {
@@ -67,6 +68,12 @@ export default class App extends React.PureComponent<Props, State> {
 
           {editData?.type == 'DX7Voice' && <InlineDX7VoiceEditor
             voice={editData.data}
+            onUpdate={editData.onDataChange}
+            onClose={this.handleCloseEditor}
+          />}
+
+          {editData?.type == 'DX7Perf' && <InlineDX7PerfEditor
+            perf={editData.data}
             onUpdate={editData.onDataChange}
             onClose={this.handleCloseEditor}
           />}

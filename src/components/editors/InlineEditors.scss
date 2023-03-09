@@ -6,12 +6,22 @@
   align-items: center;
   background: $bgColorL1;
   padding: 16px;
+
+  select {
+    padding: 4px;
+  }
+
+  input {
+    width: 40px;
+  }
 }
 
 .InlineEditor__title {
   text-align: center;
   margin: -4px 0 4px;
   font-size: 14px;
+  color: $textColorD1;
+  font-weight: bold;
 
   i {
     font-style: normal;
@@ -21,7 +31,7 @@
 
 .InlineEditor__content {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16px;
 
   label {
@@ -29,16 +39,36 @@
   }
 }
 
+.InlineEditor__field {
+  display: flex;
+  flex-direction: column;
+}
+
 .InlineEditor__actions {
   display: flex;
   gap: 16px;
-}
-
-.InlineDX7VoiceEditor__voiceName {
-  font-family: monospace;
-  width: 10.4ch;
+  min-width: 80px;
 }
 
 .InlineDX7VoiceEditor__dx7iiFeatures {
   max-width: 50vw;
+}
+
+.InlineEditor .InlineDX7VoiceEditor__voiceName {
+  font-family: monospace;
+  width: 10.4ch;
+}
+
+.InlineEditor .InlineDX7PerfEditor__perfName {
+  font-family: monospace;
+  width: 20.8ch;
+}
+
+.InlineDX7PerfEditor .InlineEditor__title i {
+  color: $accentColor2;
+}
+
+.InlineDX7PerfEditor__noteName {
+  display: inline-block;
+  width: 40px;
 }
