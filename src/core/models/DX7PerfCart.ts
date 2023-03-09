@@ -76,7 +76,9 @@ export class DX7PerfCart {
     dataArr.push(new Uint8Array([ 0 /* checksum placeholder */, 0xF7 /* end of sysex block */ ]))
 
     let perfData = mergeUint8Arrays(dataArr)
-    perfData[perfData.length - 2] = calcChecksum(perfData, PERF_HEADER.length, -2)
+    // Oddly enough, the checksum starts at "LM  ", while FKS data checksum starts two bytes earlier,
+    // where the length of the block's data is written, which is also what the manual implies.
+    perfData[perfData.length - 2] = calcChecksum(perfData, 6, -2)
     return perfData
   }
 }
