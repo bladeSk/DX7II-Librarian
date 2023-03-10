@@ -1,7 +1,7 @@
 import React from 'react'
 import { FileDrop } from 'react-file-drop'
 import logoURL from './assets/dx7ii.png'
-import MIDIProvider from 'components/utility/MIDIProvider/MIDIProvider'
+import MIDIProvider, { MIDIContext } from 'components/utility/MIDIProvider/MIDIProvider'
 import MIDISelector from 'components/utility/MIDISelector/MIDISelector'
 import { FileWithMeta } from 'components/carts/CartViewer/cartViewerTypes'
 import CartViewer from 'components/carts/CartViewer/CartViewer'
@@ -55,6 +55,7 @@ export default class App extends React.PureComponent<Props, State> {
 
           <main className="App__body">
             {this.state.sysExFiles.map((sysExFile) => {
+            <MIDIContext.Consumer>{(midiCtx) => this.state.sysExFiles.map((sysExFile) => {
               return <CartViewer
                 key={sysExFile.id}
                 file={sysExFile}
@@ -63,8 +64,9 @@ export default class App extends React.PureComponent<Props, State> {
                 onPosChanged={this.handlePosChanged}
                 onSavedAs={this.handleFileUpdate}
                 onOpenEditor={this.handleOpenEditor}
+                onSendSysEx={midiCtx.sendData}
               />
-            })}
+            })}</MIDIContext.Consumer>
           </main>
 
           {editData?.type == 'DX7Voice' && <InlineDX7VoiceEditor

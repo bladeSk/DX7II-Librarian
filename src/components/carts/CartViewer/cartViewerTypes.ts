@@ -10,6 +10,7 @@ export interface CartViewerProps {
     data: any,
     onDataChange: (oldData: any, newData: any) => void,
   ) => void
+  onSendSysEx?: (data: Uint8Array) => void,
 }
 
 export interface FileWithMeta {

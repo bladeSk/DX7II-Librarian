@@ -125,6 +125,16 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
         editedCart: this.props.cart.clone(),
         changed: false,
       })
+    } else if (actionId == 'sendSysExI' || actionId == 'sendSysExII') {
+      let data = actionId == 'sendSysExI'
+        ? this.state.editedCart.buildCartDX7()
+        : this.state.editedCart.buildCartDX7II()
+
+        try {
+          this.props.onSendSysEx?.(data)
+        } catch (err) {
+          handleError(err)
+        }
     }
   }
 

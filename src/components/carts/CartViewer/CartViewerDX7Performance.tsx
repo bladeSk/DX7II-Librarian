@@ -117,6 +117,14 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
         editedCart: this.props.cart,
         changed: false,
       })
+    } else if (actionId == 'sendSysEx') {
+      let data = this.state.editedCart.buildCart()
+
+      try {
+        this.props.onSendSysEx?.(data)
+      } catch (err) {
+        handleError(err)
+      }
     }
   }
 
