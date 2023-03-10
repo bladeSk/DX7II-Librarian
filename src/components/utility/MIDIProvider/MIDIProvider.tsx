@@ -68,9 +68,7 @@ export default class MIDIProvider extends React.Component<Props, State> {
     localStorage.setItem('dx7iilr-inputDevice', deviceId)
 
     this.setState({
-      inputDevice: Array.from(this.state.midi?.inputs.entries() || []).find(([id, dev]) => {
-        return id == deviceId
-      })?.[1],
+      inputDevice: this.state.midi?.inputs.get(deviceId),
     })
   }
 
@@ -78,9 +76,7 @@ export default class MIDIProvider extends React.Component<Props, State> {
     localStorage.setItem('dx7iilr-outputDevice', deviceId)
 
     this.setState({
-      outputDevice: Array.from(this.state.midi?.outputs.entries() || []).find(([id, dev]) => {
-        return id == deviceId
-      })?.[1],
+      outputDevice: this.state.midi?.outputs.get(deviceId),
     })
   }
 

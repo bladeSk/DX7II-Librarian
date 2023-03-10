@@ -9,6 +9,7 @@ import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
 import DragNDropProvider from 'components/utility/DragNDropProvider/DragNDropProvider'
 import InlineDX7VoiceEditor from 'components/editors/InlineDX7VoiceEditor/InlineDX7VoiceEditor'
 import InlineDX7PerfEditor from 'components/editors/InlineDX7PerfEditor/InlineDX7PerfEditor'
+import SysExReceiver from 'components/utility/SysExReceiver/SysExReceiver'
 import './App.scss'
 
 export interface Props {
@@ -85,31 +86,54 @@ export default class App extends React.PureComponent<Props, State> {
               Promise.all(
                 Array.from(files || []).map(f => f.arrayBuffer())
               ).then((buffers) => {
-                let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
-
-                let filesToAdd: FileWithMeta[] = buffers.map((buf, i) => {
-                  let file = files![i]
-                  return {
-                    fileName: file.name,
-                    buf: new Uint8Array(buf),
-                    xPos: dragEvt.clientX + i * 24,
-                    yPos: dragEvt.clientY - offsetY + i * 24,
-                    id: `${+new Date()}_${i}`,
-                    zIndex: maxZIndex + i + 1,
-                  }
-                })
-
-                filesToAdd.forEach(file => localStorage[`dx7iilr-file-${file.id}`] = toBase64(file.buf))
-
-                this.setState({
-                  sysExFiles: [ ...this.state.sysExFiles, ...filesToAdd ]
-                }, () => this.serializeState())
+                this.openSysExeFiles(buffers.map((buf, i) => ({
+                  name: files![i].name,
+                  buf: new Uint8Array(buf),
+                  x: dragEvt.clientX,
+                  y: dragEvt.clientY - offsetY,
+                })))
               })
             }}
           >Drop .syx here to load a cartridge</FileDrop>
+
+          <SysExReceiver
+            onSysExReceived={(data) => {
+              let w = Math.max(200, window.innerWidth - 440)
+              let h = Math.max(200, window.innerWidth - 500)
+
+              this.openSysExeFiles([{
+                name: 'Received SysEx',
+                buf: data,
+                x: Math.floor(Math.random() * w),
+                y: Math.floor(Math.random() * h),
+              }])
+            }}
+          />
         </DragNDropProvider>
       </MIDIProvider>
     </div>
+  }
+
+  private openSysExeFiles(files: Array<{ name: string, buf: Uint8Array, x: number, y: number }>) {
+    let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
+
+    let filesToAdd: FileWithMeta[] = files.map(({ name, buf}, i) => {
+      let file = files![i]
+      return {
+        fileName: file.name,
+        buf: new Uint8Array(buf),
+        xPos: file.x + i * 24,
+        yPos: file.y + i * 24,
+        id: `${+new Date()}_${i}`,
+        zIndex: maxZIndex + i + 1,
+      }
+    })
+
+    filesToAdd.forEach(file => localStorage[`dx7iilr-file-${file.id}`] = toBase64(file.buf))
+
+    this.setState({
+      sysExFiles: [ ...this.state.sysExFiles, ...filesToAdd ]
+    }, () => this.serializeState())
   }
 
   private handleFileWindowClose = (file: FileWithMeta) => {
