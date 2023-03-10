@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { FileDrop } from 'react-file-drop'
 import logoURL from './assets/dx7ii.png'
 import MIDIProvider, { MIDIContext } from 'components/utility/MIDIProvider/MIDIProvider'
@@ -36,6 +37,7 @@ export default class App extends React.PureComponent<Props, State> {
 
   render(): React.ReactElement {
     let editData = this.state.openEditor
+    let isEmpty = this.state.sysExFiles.length == 0
 
     return <div className="App">
       <MIDIProvider>
@@ -53,8 +55,9 @@ export default class App extends React.PureComponent<Props, State> {
             <MIDISelector />
           </header>
 
-          <main className="App__body">
-            {this.state.sysExFiles.map((sysExFile) => {
+          <main className={clsx('App__body', isEmpty && 'App__body_empty')}>
+            {isEmpty && <p>Drop a .syx file here or send SysEx from a DX7 via MIDI.</p>}
+
             <MIDIContext.Consumer>{(midiCtx) => this.state.sysExFiles.map((sysExFile) => {
               return <CartViewer
                 key={sysExFile.id}

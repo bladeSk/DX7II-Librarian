@@ -12,6 +12,14 @@
   overflow: auto;
 }
 
+.App__body_empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: $textColorD1;
+}
+
 .App__header {
   display: flex;
   justify-content: space-between;
