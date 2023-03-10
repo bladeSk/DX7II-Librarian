@@ -84,7 +84,10 @@ export default class App extends React.PureComponent<Props, State> {
               let offsetY: number = (dragEvt.target as any)?.offsetTop || 0
 
               Promise.all(
-                Array.from(files || []).map(f => f.arrayBuffer())
+                Array.from(files || [])
+                  // prevent large files from being imported, the largest DX7 sysex is 21404 B
+                  .map(f => f.size > 64 * 1024 ? { arrayBuffer: () => new ArrayBuffer(0) } : f)
+                  .map(f => f.arrayBuffer())
               ).then((buffers) => {
                 this.openSysExeFiles(buffers.map((buf, i) => ({
                   name: files![i].name,

@@ -27,6 +27,7 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
 
   render(): React.ReactElement {
     let file = this.props.file
+    let isSysEx = file.buf[0] == 0xf0
 
     return <DraggableWindow
       className="CartViewer CartViewerUnknown"
@@ -35,19 +36,24 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
-      actions={ACTIONS}
+      actions={isSysEx ? ACTIONS : undefined}
       onClose={this.handleClose}
       onMove={this.handleMove}
       onFocus={this.handleFocus}
       onAction={this.handleAction}
     >
-      <p>Unknown SysEx data ({file.buf.length} B).</p>
-      <p>DX7 SysEx lengths:</p>
-      <ul>
-        <li>DX7II voices/patches: 21404 B</li>
-        <li>DX7 voices/patches: 4104 B</li>
-        <li>DX7II performances: 1650 B</li>
-      </ul>
+      {isSysEx
+        ? <>
+          <p>Unknown SysEx data ({file.buf.length} B).</p>
+          <p>Supported DX7 SysEx file sizes:</p>
+          <ul>
+            <li>DX7II voices/patches: 21404 B</li>
+            <li>DX7 voices/patches: 4104 B</li>
+            <li>DX7II performances: 1650 B</li>
+          </ul>
+        </>
+        : <p>This file does not contain SysEx data.</p>
+      }
     </DraggableWindow>
   }
 
