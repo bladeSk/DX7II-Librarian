@@ -106,6 +106,10 @@ export default class App extends React.PureComponent<Props, State> {
 
           <SysExReceiver
             onSysExReceived={(data) => {
+              // prevent auto-importing unknown SysExes - just editing parameters can cause SysEx data
+              // to be sent, flooding the app with unknown data windows
+              if (!KNOWN_DATA_LENGTHS.includes(data.length)) return
+
               let w = Math.max(200, window.innerWidth - 440)
               let h = Math.max(200, window.innerWidth - 500)
 
@@ -233,3 +237,15 @@ export default class App extends React.PureComponent<Props, State> {
     }
   }
 }
+
+const DX7_1_CART_LENGTH = 5232
+const DX7_2_CART_LENGTH = 21404
+const DX7_2_PARTIAL_CART_LENGTH = 21404
+const DX7_2_PERF_LENGTH = 1650
+
+const KNOWN_DATA_LENGTHS = [
+  DX7_1_CART_LENGTH,
+  DX7_2_CART_LENGTH,
+  DX7_2_PARTIAL_CART_LENGTH,
+  DX7_2_PERF_LENGTH,
+]
