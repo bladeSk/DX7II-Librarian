@@ -46,6 +46,17 @@ export class DX7VoiceCart {
       }
 
       return cart
+    } else if (this.isPartialDX7IICart(data)) {
+      let cart = new DX7VoiceCart()
+
+      for (let i = 0; i < 32; i++) {
+        cart.voices[i] = new DX7Voice(
+          cut(data, 1128 + VMEM_HEADER.length + 128 * i, 128),
+          cut(data, 0 + AMEM_HEADER.length + 35 * i, 35),
+        )
+      }
+
+      return cart
     }
 
     return undefined
@@ -147,6 +158,15 @@ export class DX7VoiceCart {
     if (!dataMatches(FKS_HEADER, data, 7)) return false
     if (!dataMatches(AMEM_HEADER, data, 16172)) return false
     if (!dataMatches(VMEM_HEADER, data, 17300)) return false
+
+    return true
+  }
+
+  /** Just AMEM and VMEM, used by DXconvert */
+  private static isPartialDX7IICart(data: Uint8Array): boolean {
+    if (data.length != 5232) return false
+    if (!dataMatches(AMEM_HEADER, data, 0)) return false
+    if (!dataMatches(VMEM_HEADER, data, 1128)) return false
 
     return true
   }
