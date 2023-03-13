@@ -93,10 +93,11 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
   }
 
   private handleAction = (actionId: string) => {
-    if (!this.state.editedCart) return
+    let cart = this.state.editedCart
+    if (!cart) return
 
     if (actionId == 'saveAs') {
-      let data = this.state.editedCart.buildCart()
+      let data = cart.buildCart()
 
       saveFileAs(data, this.props.file.fileName)
         .then((newFileName) => {
@@ -114,14 +115,14 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
         .catch(handleError)
     } else if (actionId == 'revert') {
       this.setState({
-        editedCart: this.props.cart,
+        editedCart: this.props.cart.clone(),
         changed: false,
       })
     } else if (actionId == 'sendSysEx') {
-      let data = this.state.editedCart.buildCart()
+      if (!confirm('This will overwrite all the performances in your DX7II memory.\nSend SysEx data?')) return
 
       try {
-        this.props.onSendSysEx?.(data)
+        this.props.onSendSysEx?.(cart.buildCart())
       } catch (err) {
         handleError(err)
       }

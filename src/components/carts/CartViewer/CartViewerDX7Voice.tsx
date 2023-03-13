@@ -99,12 +99,11 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
   }
 
   private handleAction = (actionId: string) => {
-    if (!this.state.editedCart) return
+    let cart = this.state.editedCart
+    if (!cart) return
 
     if (actionId == 'saveAsI' || actionId == 'saveAsII') {
-      let data = actionId == 'saveAsI'
-        ? this.state.editedCart.buildCartDX7()
-        : this.state.editedCart.buildCartDX7II()
+      let data = actionId == 'saveAsI' ? cart.buildCartDX7() : cart.buildCartDX7II()
 
       saveFileAs(data, this.props.file.fileName)
         .then((newFileName) => {
@@ -125,16 +124,22 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
         editedCart: this.props.cart.clone(),
         changed: false,
       })
-    } else if (actionId == 'sendSysExI' || actionId == 'sendSysExII') {
-      let data = actionId == 'sendSysExI'
-        ? this.state.editedCart.buildCartDX7()
-        : this.state.editedCart.buildCartDX7II()
+    } else if (actionId == 'sendSysExI') {
+      if (!confirm('This will overwrite all the voices in your DX7 memory.\nSend SysEx data?')) return
 
-        try {
-          this.props.onSendSysEx?.(data)
-        } catch (err) {
-          handleError(err)
-        }
+      try {
+        this.props.onSendSysEx?.(cart.buildCartDX7())
+      } catch (err) {
+        handleError(err)
+      }
+    } else if (actionId == 'sendSysExII') {
+      if (!confirm(`This will overwrite voices in the ${cart.bank == 0 ? '1-32' : '33-64'} block of your DX7II memory.\nSend SysEx data?`)) return
+
+      try {
+        this.props.onSendSysEx?.(cart.buildCartDX7II())
+      } catch (err) {
+        handleError(err)
+      }
     }
   }
 
