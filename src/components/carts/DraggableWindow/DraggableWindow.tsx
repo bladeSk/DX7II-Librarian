@@ -174,7 +174,7 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
     this.curDragPos = undefined
 
     this.updatePos()
-    this.props.onMove?.(this.elmPos[0], this.elmPos[1])
+    this.props.onMove?.(Math.max(0, this.elmPos[0]), Math.max(0, this.elmPos[1]))
   }
 
   private handleMenuClick = (e: React.MouseEvent) => {
