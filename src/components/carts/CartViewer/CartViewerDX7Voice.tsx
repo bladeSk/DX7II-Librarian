@@ -54,7 +54,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       className={classNames}
       title={<>
         {this.state.changed && <span className="CartViewer__changed">*</span>}
-        {file.fileName}
+        {file.fileName.replace(/\.syx$/, '')}
       </>}
       titleExtra={<div className="CartViewer__bankToggle"
         onMouseDown={this.handleBankToggleClick}

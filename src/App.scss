@@ -30,9 +30,30 @@
 }
 
 .App__logo {
-  text-transform: uppercase;
-  font-size: 30px;
-  line-height: 1;
+  display: flex;
+  align-items: flex-end;
+
+  h1 {
+    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: normal;
+    line-height: 1;
+    margin: 0;
+  }
+
+  svg {
+    vertical-align: top;
+    height: 32px;
+  }
+
+  a {
+    color: $accentColor2;
+    margin-left: 8px;
+
+    &:hover {
+      color: lighten($accentColor2, 10%);
+    }
+  }
 
   img {
     height: 30px;
@@ -40,10 +61,29 @@
   }
 }
 
+.App__helpButton {
+  margin-left: 16px;
+  fill: $accentColor1;
+  cursor: pointer;
+
+  &:hover {
+    fill: lighten($accentColor1, 10%);
+  }
+}
+
 .App__subTitle {
   font-size: 14px;
   color: $textColorD1;
   margin-top: 4px;
+}
+
+.App__helpWindow {
+  width: 480px;
+  border-color: $accentColor4;
+
+  .DraggableWindow__header {
+    background: $accentColor4;
+  }
 }
 
 .App .file-drop-target {

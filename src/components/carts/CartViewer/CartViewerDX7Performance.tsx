@@ -53,7 +53,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       variant="2"
       title={<>
         {this.state.changed && <span className="CartViewer__changed">*</span>}
-        {file.fileName}
+        {file.fileName.replace(/\.syx$/, '')}
       </>}
       xPos={file.xPos}
       yPos={file.yPos}

@@ -1,16 +1,19 @@
 import React from 'react'
 import clsx from 'clsx'
 import { FileDrop } from 'react-file-drop'
+import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
 import logoURL from './assets/dx7ii.png'
+import QuestionSvg from './assets/icons/question-circle.svg'
+import GithubSvg from './assets/icons/github-fill.svg'
 import MIDIProvider, { MIDIContext } from 'components/utility/MIDIProvider/MIDIProvider'
 import MIDISelector from 'components/utility/MIDISelector/MIDISelector'
 import { FileWithMeta } from 'components/carts/CartViewer/cartViewerTypes'
 import CartViewer from 'components/carts/CartViewer/CartViewer'
-import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
 import DragNDropProvider from 'components/utility/DragNDropProvider/DragNDropProvider'
 import InlineDX7VoiceEditor from 'components/editors/InlineDX7VoiceEditor/InlineDX7VoiceEditor'
 import InlineDX7PerfEditor from 'components/editors/InlineDX7PerfEditor/InlineDX7PerfEditor'
 import SysExReceiver from 'components/utility/SysExReceiver/SysExReceiver'
+import DraggableWindow from 'components/carts/DraggableWindow/DraggableWindow'
 import './App.scss'
 
 export interface Props {
@@ -45,8 +48,13 @@ export default class App extends React.PureComponent<Props, State> {
           <header className="App__header">
             <div className="App__title">
               <div className="App__logo">
-                <img src={logoURL} alt="DX7II" />Librarian
+                <h1><img src={logoURL} alt="DX7II" />Librarian</h1>
+
+                <QuestionSvg className="App__helpButton" onClick={this.handleHelpClick} />
+
+                <a href="https://github.com/bladeSk/dx7ii-librarian"><GithubSvg /></a>
               </div>
+
               <div className="App__subTitle">
                 Yamaha DX7II-FD / DX7II-D / DX7s / DX7 cart manager in your browser
               </div>
@@ -59,6 +67,43 @@ export default class App extends React.PureComponent<Props, State> {
             {isEmpty && <p>Drop a .syx file here or send SysEx from a DX7 via MIDI.</p>}
 
             <MIDIContext.Consumer>{(midiCtx) => this.state.sysExFiles.map((sysExFile) => {
+              if (sysExFile.id == 'help') {
+                return <DraggableWindow
+                  key={sysExFile.id}
+                  className="App__helpWindow"
+                  title={sysExFile.fileName}
+                  xPos={sysExFile.xPos}
+                  yPos={sysExFile.yPos}
+                  zIndex={sysExFile.zIndex}
+                  onFocus={() => this.handleFileWindowFocus(sysExFile)}
+                  onMove={(xPos, yPos) => this.handlePosChanged(sysExFile, xPos, yPos)}
+                  onClose={() => this.handleFileWindowClose(sysExFile)}
+                >
+                  <p>DX7II Librarian allows you to manage Yamaha DX7 and DX7II voices and performances right in your browser.</p>
+                  <p>Import voice cartridges by dropping a .syx file on this page or receive SysExes directly via MIDI.</p>
+                  <p>Currently supported features:</p>
+                  <ul>
+                    <li>Move and reorder voices/performances within a cartridge or across cartridges</li>
+                    <li>Rename voices/performances</li>
+                    <li>Edit basic performance parameters</li>
+                    <li>View which DX7II features are in use by a voice</li>
+                    <li>Send and receive SysEx files via MIDI - note that you may need to restart Firefox after connecting a MIDI device</li>
+                  </ul>
+
+                  <p><button className="button_acc4">Reset to demo project</button></p>
+
+                  <p>Useful links:<br/>
+                    <a href="https://github.com/bladeSk/dx7ii-librarian">Github - report issues here</a><br/>
+                    <a href="TODO">Download factory DX7II voices and performances</a><br/>
+                    <a href="https://yamahablackboxes.com/collection/yamaha-dx7-synthesizer/patches/">Get original DX7 voice carts</a><br/>
+                    <a href="https://www.thisdx7cartdoesnotexist.com/">Generate a random DX7 cartridge</a><br/>
+                    <a href="https://github.com/asb2m10/dexed">Dexed - voice editor and synth (DX7 mk.I only)</a>
+                  </p>
+
+                  <p>Planned features: voice previews</p>
+                </DraggableWindow>
+              }
+
               return <CartViewer
                 key={sysExFile.id}
                 file={sysExFile}
@@ -94,7 +139,7 @@ export default class App extends React.PureComponent<Props, State> {
                   .map(f => f.size > 64 * 1024 ? { arrayBuffer: () => new ArrayBuffer(0) } : f)
                   .map(f => f.arrayBuffer())
               ).then((buffers) => {
-                this.openSysExeFiles(buffers.map((buf, i) => ({
+                this.openFiles(buffers.map((buf, i) => ({
                   name: files![i].name,
                   buf: new Uint8Array(buf),
                   x: dragEvt.clientX,
@@ -111,9 +156,9 @@ export default class App extends React.PureComponent<Props, State> {
               if (!KNOWN_DATA_LENGTHS.includes(data.length)) return
 
               let w = Math.max(200, window.innerWidth - 440)
-              let h = Math.max(200, window.innerWidth - 500)
+              let h = Math.max(200, window.innerHeight - 500)
 
-              this.openSysExeFiles([{
+              this.openFiles([{
                 name: 'Received SysEx',
                 buf: data,
                 x: Math.floor(Math.random() * w),
@@ -126,17 +171,18 @@ export default class App extends React.PureComponent<Props, State> {
     </div>
   }
 
-  private openSysExeFiles(files: Array<{ name: string, buf: Uint8Array, x: number, y: number }>) {
+  private openFiles(
+    files: Array<{ name: string, buf: Uint8Array, x: number, y: number, id?: string }>,
+  ) {
     let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
 
-    let filesToAdd: FileWithMeta[] = files.map(({ name, buf}, i) => {
-      let file = files![i]
+    let filesToAdd: FileWithMeta[] = files.map((file, i) => {
       return {
         fileName: file.name,
-        buf: new Uint8Array(buf),
+        buf: new Uint8Array(file.buf),
         xPos: file.x + i * 24,
         yPos: file.y + i * 24,
-        id: `${+new Date()}_${i}`,
+        id: file.id || `${+new Date()}_${i}`,
         zIndex: maxZIndex + i + 1,
       }
     })
@@ -212,6 +258,25 @@ export default class App extends React.PureComponent<Props, State> {
 
   private handleCloseEditor = () => {
     this.setState({ openEditor: undefined })
+  }
+
+  private handleHelpClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    let helpFile = this.state.sysExFiles.find(f => f.id == 'help')
+
+    if (helpFile) {
+      this.handleFileWindowClose(helpFile)
+    } else {
+      this.openFiles([{
+        name: 'Help',
+        buf: new Uint8Array([ 0 ]),
+        x: Math.floor(Math.max(0, (window.innerWidth - 480) / 2)),
+        y: Math.floor(Math.max(0, (window.innerHeight - 680) / 2)),
+        id: 'help',
+      }])
+    }
   }
 
   private serializeState() {
