@@ -16,12 +16,19 @@ export interface Props extends CartViewerProps {
 
 interface State {
   editedCart: DX7PerfCart
+  editedName: string
   changed: boolean
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAs', label: 'Save as'},
-  { id: 'sendSysEx', label: 'Send performance SysEx'},
+  { id: 'saveAs', label: 'Save as...'},
+  { id: 'sendSysEx', label: 'Send SysEx (DX7II performances)'},
+  { id: 'rename', label: 'Rename'},
+]
+
+const ACTIONS_CHANGED: WindowAction[] = [
+  ...ACTIONS,
+  { id: 'store', label: 'Store changes'},
   { id: 'revert', label: 'Revert changes'},
 ]
 
@@ -35,6 +42,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
 
     this.state = {
       editedCart: this.props.cart.clone(),
+      editedName: this.props.file.fileName,
       changed: false,
     }
   }
@@ -53,12 +61,12 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       variant="2"
       title={<>
         {this.state.changed && <span className="CartViewer__changed">*</span>}
-        {file.fileName.replace(/\.syx$/, '')}
+        {this.state.editedName.replace(/\.syx$/i, '')}
       </>}
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
-      actions={ACTIONS}
+      actions={this.state.changed ? ACTIONS_CHANGED : ACTIONS}
       onClose={this.handleClose}
       onMove={this.handleMove}
       onFocus={this.handleFocus}
@@ -99,7 +107,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     if (actionId == 'saveAs') {
       let data = cart.buildCart()
 
-      saveFileAs(data, this.props.file.fileName)
+      saveFileAs(data, this.state.editedName)
         .then((newFileName) => {
           if (!newFileName) return // aborted
 
@@ -110,12 +118,13 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
             id: `${+new Date()}_0`,
           }
 
-          this.props.onSavedAs?.(this.props.file, newFile)
+          this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
     } else if (actionId == 'revert') {
       this.setState({
         editedCart: this.props.cart.clone(),
+        editedName: this.props.file.fileName,
         changed: false,
       })
     } else if (actionId == 'sendSysEx') {
@@ -126,6 +135,18 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       } catch (err) {
         handleError(err)
       }
+    } else if (actionId == 'rename') {
+      let name = prompt('Rename to', this.props.file.fileName.replace(/\.syx$/i, ''))
+
+      if (!name) return
+
+      this.setState({ editedName: name, changed: true })
+    } else if (actionId == 'store') {
+      this.props.onSave?.(this.props.file, {
+        ...this.props.file,
+        fileName: this.state.editedName,
+        id: `${+new Date()}_0`,
+      })
     }
   }
 

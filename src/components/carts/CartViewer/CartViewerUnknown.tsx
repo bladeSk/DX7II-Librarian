@@ -9,8 +9,8 @@ interface State {
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAs', label: 'Save as'},
-  { id: 'sendSysEx', label: 'Send performance SysEx'},
+  { id: 'saveAs', label: 'Save as...'},
+  { id: 'sendSysEx', label: 'Send SysEx'},
 ]
 
 
@@ -84,7 +84,7 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
             id: `${+new Date()}_0`,
           }
 
-          this.props.onSavedAs?.(this.props.file, newFile)
+          this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
     }

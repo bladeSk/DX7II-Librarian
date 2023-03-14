@@ -16,14 +16,21 @@ export interface Props extends CartViewerProps {
 
 interface State {
   editedCart: DX7VoiceCart
+  editedName: string
   changed: boolean
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAsII', label: 'Save as DX7II voices'},
-  { id: 'saveAsI', label: 'Save as DX7 voices'},
-  { id: 'sendSysExII', label: 'Send voices SysEx (DX7II)'},
-  { id: 'sendSysExI', label: 'Send voices SysEx (DX7)'},
+  { id: 'saveAsII', label: 'Save as DX7II voices...'},
+  { id: 'saveAsI', label: 'Save as DX7 voices...'},
+  { id: 'sendSysExII', label: 'Send SysEx (DX7II voices)'},
+  { id: 'sendSysExI', label: 'Send SysEx (DX7 voices)'},
+  { id: 'rename', label: 'Rename'},
+]
+
+const ACTIONS_CHANGED: WindowAction[] = [
+  ...ACTIONS,
+  { id: 'store', label: 'Store changes'},
   { id: 'revert', label: 'Revert changes'},
 ]
 
@@ -37,6 +44,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
 
     this.state = {
       editedCart: this.props.cart.clone(),
+      editedName: this.props.file.fileName,
       changed: false,
     }
   }
@@ -54,7 +62,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       className={classNames}
       title={<>
         {this.state.changed && <span className="CartViewer__changed">*</span>}
-        {file.fileName.replace(/\.syx$/, '')}
+        {this.state.editedName.replace(/\.syx$/i, '')}
       </>}
       titleExtra={<div className="CartViewer__bankToggle"
         onMouseDown={this.handleBankToggleClick}
@@ -63,7 +71,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
-      actions={ACTIONS}
+      actions={this.state.changed ? ACTIONS_CHANGED : ACTIONS}
       onClose={this.handleClose}
       onMove={this.handleMove}
       onFocus={this.handleFocus}
@@ -105,7 +113,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     if (actionId == 'saveAsI' || actionId == 'saveAsII') {
       let data = actionId == 'saveAsI' ? cart.buildCartDX7() : cart.buildCartDX7II()
 
-      saveFileAs(data, this.props.file.fileName)
+      saveFileAs(data, this.state.editedName)
         .then((newFileName) => {
           if (!newFileName) return // aborted
 
@@ -116,12 +124,13 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
             id: `${+new Date()}_0`,
           }
 
-          this.props.onSavedAs?.(this.props.file, newFile)
+          this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
     } else if (actionId == 'revert') {
       this.setState({
         editedCart: this.props.cart.clone(),
+        editedName: this.props.file.fileName,
         changed: false,
       })
     } else if (actionId == 'sendSysExI') {
@@ -140,6 +149,18 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       } catch (err) {
         handleError(err)
       }
+    } else if (actionId == 'rename') {
+      let name = prompt('Rename to', this.props.file.fileName.replace(/\.syx$/i, ''))
+
+      if (!name) return
+
+      this.setState({ editedName: name, changed: true })
+    } else if (actionId == 'store') {
+      this.props.onSave?.(this.props.file, {
+        ...this.props.file,
+        fileName: this.state.editedName,
+        id: `${+new Date()}_0`,
+      })
     }
   }
 
