@@ -67,50 +67,13 @@ export default class App extends React.PureComponent<Props, State> {
             {isEmpty && <p>Drop a .syx file here or send SysEx from a DX7 via MIDI.</p>}
 
             <MIDIContext.Consumer>{(midiCtx) => this.state.sysExFiles.map((sysExFile) => {
-              if (sysExFile.id == 'help') {
-                return <DraggableWindow
-                  key={sysExFile.id}
-                  className="App__helpWindow"
-                  title={sysExFile.fileName}
-                  xPos={sysExFile.xPos}
-                  yPos={sysExFile.yPos}
-                  zIndex={sysExFile.zIndex}
-                  onFocus={() => this.handleFileWindowFocus(sysExFile)}
-                  onMove={(xPos, yPos) => this.handlePosChanged(sysExFile, xPos, yPos)}
-                  onClose={() => this.handleFileWindowClose(sysExFile)}
-                >
-                  <p>DX7II Librarian allows you to manage Yamaha DX7 and DX7II voices and performances right in your browser.</p>
-                  <p>Import voice cartridges by dropping a .syx file on this page or receive SysExes directly via MIDI.</p>
-                  <p>Currently supported features:</p>
-                  <ul>
-                    <li>Move and reorder voices/performances within a cartridge or across cartridges</li>
-                    <li>Rename voices/performances</li>
-                    <li>Edit basic performance parameters</li>
-                    <li>View which DX7II features are in use by a voice</li>
-                    <li>Send and receive SysEx files via MIDI - note that you may need to restart Firefox after connecting a MIDI device</li>
-                  </ul>
-
-                  <p><button className="button_acc4">Reset to demo project</button></p>
-
-                  <p>Useful links:<br/>
-                    <a href="https://github.com/bladeSk/dx7ii-librarian">Github - report issues here</a><br/>
-                    <a href="TODO">Download factory DX7II voices and performances</a><br/>
-                    <a href="https://yamahablackboxes.com/collection/yamaha-dx7-synthesizer/patches/">Get original DX7 voice carts</a><br/>
-                    <a href="https://www.thisdx7cartdoesnotexist.com/">Generate a random DX7 cartridge</a><br/>
-                    <a href="https://github.com/asb2m10/dexed">Dexed - voice editor and synth (DX7 mk.I only)</a>
-                  </p>
-
-                  <p>Planned features: voice previews</p>
-                </DraggableWindow>
-              }
-
               return <CartViewer
                 key={sysExFile.id}
                 file={sysExFile}
                 onClose={this.handleFileWindowClose}
                 onFocus={this.handleFileWindowFocus}
                 onPosChanged={this.handlePosChanged}
-                onSavedAs={this.handleFileUpdate}
+                onSave={this.handleFileUpdate}
                 onOpenEditor={this.handleOpenEditor}
                 onSendSysEx={midiCtx.sendData}
               />
@@ -222,7 +185,7 @@ export default class App extends React.PureComponent<Props, State> {
       zIndex: fileIdToZ[file.id] || 0,
     }))
 
-    this.setState({ sysExFiles })
+    this.setState({ sysExFiles }, () => this.serializeState())
   }
 
   private handleFileUpdate = (oldFile: FileWithMeta, newFile: FileWithMeta) => {

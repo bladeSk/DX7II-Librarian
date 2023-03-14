@@ -43,6 +43,14 @@
   }
 }
 
+.DraggableWindow_variant4 {
+  border: solid 1px $accentColor4;
+
+  .DraggableWindow__header {
+    background: $accentColor4;
+  }
+}
+
 .DraggableWindow__header {
   display: flex;
   min-width: 0;

@@ -13,7 +13,7 @@ export interface Props {
   xPos?: number
   yPos?: number
   zIndex?: number
-  variant?: '1' | '2' | '3'
+  variant?: '1' | '2' | '3' | '4'
   onAction?: (actionId: string) => void
   onFocus?: () => void
   onMove?: (xPos: number, yPos: number) => void

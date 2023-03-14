@@ -77,15 +77,6 @@
   margin-top: 4px;
 }
 
-.App__helpWindow {
-  width: 480px;
-  border-color: $accentColor4;
-
-  .DraggableWindow__header {
-    background: $accentColor4;
-  }
-}
-
 .App .file-drop-target {
   display: none;
 }

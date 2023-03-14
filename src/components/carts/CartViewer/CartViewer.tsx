@@ -5,6 +5,7 @@ import { DX7PerfCart } from 'core/models/DX7PerfCart'
 import CartViewerDX7Voice from './CartViewerDX7Voice'
 import CartViewerDX7Performance from './CartViewerDX7Performance'
 import CartViewerUnknown from './CartViewerUnknown'
+import CartViewerHelp from './CartViewerHelp'
 
 interface State {
   voiceCart?: DX7VoiceCart
@@ -36,6 +37,8 @@ export default class CartViewer extends React.PureComponent<CartViewerProps, Sta
       return <CartViewerDX7Voice {...this.props} cart={this.state.voiceCart} />
     } else if (this.state.perfCart) {
       return <CartViewerDX7Performance {...this.props} cart={this.state.perfCart} />
+    } else if (this.props.file.id == 'help') {
+      return <CartViewerHelp {...this.props} />
     } else {
       return <CartViewerUnknown {...this.props} />
     }

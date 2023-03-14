@@ -32,3 +32,25 @@
     color: $textColor;
   }
 }
+
+.CartViewerHelp {
+  width: 480px;
+
+  .DraggableWindow__content {
+    padding: 16px;
+    height: 520px;
+    overflow: auto;
+    color: rgba($textColor, 0.7);
+  }
+
+  i {
+    font-style: normal;
+    color: $textColor;
+  }
+
+  h2 {
+    margin: 32px 0 0 0;
+    color: $textColor;
+    font-size: 20px;
+  }
+}
