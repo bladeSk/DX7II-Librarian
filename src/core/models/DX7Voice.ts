@@ -23,6 +23,8 @@ export class DX7Voice {
     if (this.vmemData.length != DEFAULT_VMEM.length) throw new Error('Incorrect VMEM length')
     if (this.amemData.length != DEFAULT_AMEM.length) throw new Error('Incorrect AMEM length')
     if (this.fksData.length != DEFAULT_FKS.length) throw new Error('Incorrect FKS length')
+
+    if (!amemData) this.copyAmsFromVmemToAmem()
   }
 
   clone(): DX7Voice {
@@ -48,13 +50,33 @@ export class DX7Voice {
   }
 
   get version(): 1 | 2 {
-    return uint8ArraysEqual(this.amemData, DEFAULT_AMEM) ? 1 : 2
+    let amemWithoutAms = this.amemData.slice(0)
+    amemWithoutAms[1] = amemWithoutAms[2] = amemWithoutAms[3] = 0
+    if (!uint8ArraysEqual(amemWithoutAms, DEFAULT_AMEM)) return 2
+
+    let am = this.amemData
+    if (Math.max(
+      am[1] & 0b111,
+      (am[1] & 0b111000) >> 3,
+      am[2] & 0b111,
+      (am[2] & 0b111000) >> 3,
+      am[3] & 0b111,
+      (am[3] & 0b111000) >> 3,
+    ) > 3) return 2
+
+    return 1
   }
 
   get dx7iiFeatures(): string[] {
     let am = this.amemData
     let fks = am[0]
-    let ams = am[1] || am[2] || am[3]
+    let ams1 = am[1] & 0b111
+    let ams2 = (am[1] & 0b111000) >> 3
+    let ams3 = am[2] & 0b111
+    let ams4 = (am[2] & 0b111000) >> 3
+    let ams5 = am[3] & 0b111
+    let ams6 = (am[3] & 0b111000) >> 3
+    let ams = ams1 > 3 || ams2 > 3 || ams3 > 3 || ams4 > 3 || ams5 > 3 || ams6 > 3
     let rndp = (am[4] & 0b1110000) >> 4
     let vpsw = (am[4] & 0b0001000) >> 3
     let ltrg = (am[4] & 0b0000100) >> 2
@@ -75,7 +97,7 @@ export class DX7Voice {
 
     return [
       fks && 'Fract. scaling',
-      ams && 'AM sens.',
+      ams && 'AM sens. 4-7',
       rndp && 'Random pitch',
       vpsw && 'Pitch EG vel. sens.',
       ltrg && 'Multi LFO',
@@ -94,6 +116,25 @@ export class DX7Voice {
       mc && 'MIDI in 1 params',
       fccs1 && 'FC1 as CS1',
     ].filter(Boolean) as string[]
+  }
+
+  /**
+   * Copies the AMS params of all OPs from VMEM to AMEM. AMEM has an enhanced AMS param (range 0-7)
+   * that should match its VMEM counterpart (range 0-3). Required when converting DX7 voices to DX7II.
+   */
+  private copyAmsFromVmemToAmem() {
+    let vmem = this.vmemData
+    let ams1 = vmem[0 * 17 + 13] & 0b11
+    let ams2 = vmem[1 * 17 + 13] & 0b11
+    let ams3 = vmem[2 * 17 + 13] & 0b11
+    let ams4 = vmem[3 * 17 + 13] & 0b11
+    let ams5 = vmem[4 * 17 + 13] & 0b11
+    let ams6 = vmem[5 * 17 + 13] & 0b11
+
+    let amem = this.amemData
+    amem[1] = (ams2 << 3) | ams1
+    amem[2] = (ams4 << 3) | ams3
+    amem[3] = (ams6 << 3) | ams5
   }
 }
 
