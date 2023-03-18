@@ -42,19 +42,19 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
         sectionId="feat" expanded={exp == 'feat'} onToggle={this.handleSectionToggle}
       >
         <ul>
-          <li>Move and reorder voices or performances within a cartridge or across multiple cartridges</li>
-          <li>Rename voices/performances</li>
-          <li>Edit basic performance parameters</li>
-          <li>View which DX7II features are in use by a voice</li>
-          <li>Send and receive SysEx files via MIDI</li>
+          <li>Move and reorder <span className="accent1">voices</span> or <span className="accent2">performances</span> within a cartridge or across multiple cartridges</li>
+          <li>Rename <span className="accent1">voices</span>/<span className="accent2">performances</span></li>
+          <li>Edit basic <span className="accent2">performance</span> parameters</li>
+          <li>View which DX7II features are in use by a <span className="accent1">voice</span></li>
+          <li>Send and receive SysEx data via MIDI - compatible with DX7II and the original DX7</li>
         </ul>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Opening patches/voices"
+      <CollapsibleSection title="Importing voices (DX7 patches)"
         sectionId="opening" expanded={exp == 'opening'} onToggle={this.handleSectionToggle}
       >
         <p>
-          Import voice cartridges by dropping a DX7 .syx file anywhere on this page. {}
+          Import voice cartridges by dropping a DX7 <i>.syx</i> file anywhere on this page. {}
           You can find a lot of these on the internet - {}
           see <a href="" onClick={this.handleSectionLinkClick.bind(this, 'links')}>Useful links</a>.
         </p>
@@ -62,6 +62,8 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
           Voices can be received directly from a DX7 via MIDI {}
           (see <a href="" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting voices from a DX7</a>).
         </p>
+
+        <p>You can also import performance cartridges in the same way.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Sending voices to a DX7"
@@ -72,18 +74,18 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
         <p><i>DX7II</i></p>
         <ul>
           <li>press EDIT</li>
-          <li>press CARTRIDGE (15)</li>
-          <li>set INT (internal memory protection) to OFF</li>
+          <li>press button #14 (UTILITY-TUNE) until you see "Memory protect"</li>
+          <li>set INT (internal) to OFF</li>
         </ul>
 
         <p><i>DX7</i></p>
         <ul>
-          <li>press FUNCTION, press 8, set MIDI CH to 1</li>
-          <li>press 8 again, change SYS INFO UNAVAIL to SYS INFO UNAVAIL by pressing YES</li>
-          <li>press INTERNAL MEMORY PROTECT (X) and set to OFF</li>
+          <li>press FUNCTION, press button #8 until you see MIDI CH, set MIDI CH to 1</li>
+          <li>press #8 again, until you see SYS INFOm change SYS INFO UNAVAIL to AVAIL by pressing YES</li>
+          <li>press INTERNAL MEMORY PROTECT and set to OFF</li>
         </ul>
 
-        <p>Click on a window's menu and select <i>Send SysEx</i>. The synth should display <i>Receiving MIDI data</i>.</p>
+        <p>Click <i>Send via MIDI</i> in a cartridge window's menu bar. The synth should display <i>Receiving MIDI data</i>.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Exporting voices from a DX7"
@@ -92,15 +94,15 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
         <p><i>DX7II</i></p>
         <ul>
           <li>press EDIT</li>
-          <li>press MIDI 2 (32) twice - until you see "Voice Transmit"</li>
+          <li>press button #32 (MIDI 2) - until you see "Voice Transmit"</li>
           <li>select 1-32 or 33-64, press yes twice</li>
         </ul>
 
         <p><i>DX7</i></p>
         <ul>
           <li>press FUNCTION</li>
-          <li>press 8 until you see SYS INFO UNAVAIL, change to SYS INFO AVAIL by pressing YES</li>
-          <li>press 8 until you see MIDI TRANSMIT, press YES</li>
+          <li>press #8 until you see SYS INFO UNAVAIL, change to SYS INFO AVAIL by pressing YES</li>
+          <li>press #8 until you see MIDI TRANSMIT, press YES</li>
         </ul>
 
         <p>The received data should show up automatically as a new window in DX7II Librarian.</p>

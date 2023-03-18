@@ -276,8 +276,8 @@ export default class App extends React.PureComponent<Props, State> {
       this.openFiles([{
         name: 'Help',
         buf: new Uint8Array([ 0 ]),
-        x: Math.floor(Math.max(0, (window.innerWidth - 480) / 2)),
-        y: Math.floor(Math.max(0, (window.innerHeight - 680) / 2)),
+        x: (document.querySelector('.App__body')?.clientWidth || window.innerWidth) - 540,
+        y: 20,
         id: 'help',
       }])
     }
