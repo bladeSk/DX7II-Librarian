@@ -73,7 +73,7 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
 
       <div className="CartItem__name">{this.props.name}</div>
 
-      {this.props.isDX7II && <IISvg className="CartItem__dx7ii"/>}
+      {this.props.isDX7II && <span className="CartItem__dx7ii" title="Uses DX7II features"><IISvg /></span>}
 
       {dragNDropCtx.type == dataType && dragNDropCtx.data != data && <>
         <div className={clsx('CartItem__dragAreaBefore', dragOverBefore && 'CartItem__dragAreaBefore_active')}

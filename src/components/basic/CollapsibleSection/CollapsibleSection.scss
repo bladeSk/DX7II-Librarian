@@ -1,0 +1,42 @@
+@import 'theme/vars';
+
+.CollapsibleSection {
+  position: relative;
+}
+
+.CollapsibleSection__title {
+  color: $textColor;
+  cursor: pointer;
+  padding: 8px 32px 8px 16px;
+  border-top: solid 1px rgba($textColor, 0.2);
+  margin: 0 -16px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.CollapsibleSection__chevron {
+  position: absolute;
+  top: 12px;
+  right: 0;
+}
+
+.CollapsibleSection__content {
+  display: none;
+  margin-top: -4px;
+}
+
+.CollapsibleSection_expanded {
+  .CollapsibleSection__title {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .CollapsibleSection__chevron {
+    transform: rotate(180deg);
+  }
+
+  .CollapsibleSection__content {
+    display: block;
+  }
+}

@@ -52,6 +52,10 @@
 .CartItem__dx7ii {
   flex-shrink: 0;
   margin-right: 4px;
+
+  svg {
+    vertical-align: middle;
+  }
 }
 
 // drag & drop stuff

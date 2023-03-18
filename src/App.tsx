@@ -175,7 +175,9 @@ export default class App extends React.PureComponent<Props, State> {
     } else if (actionId == 'newPerfCart') {
       this.openFileAtRandomLocation('New Performance Cart', DX7PerfCart.createEmpty().buildCart())
     } else if (actionId == 'demoProject') {
-
+      alert('TODO')
+    } else if (actionId == 'openHelp') {
+      this.handleHelpClick()
     }
   }
 
@@ -245,9 +247,9 @@ export default class App extends React.PureComponent<Props, State> {
     this.setState({ openEditor: undefined })
   }
 
-  private handleHelpClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+  private handleHelpClick = (e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
 
     let helpFile = this.state.sysExFiles.find(f => f.id == 'help')
 
@@ -293,6 +295,7 @@ const MENU_ACTIONS: MenuButtonAction[] = [
   { id: 'newVoiceCart', label: 'New voice cart' },
   { id: 'newPerfCart', label: 'New performance cart' },
   { id: 'demoProject', label: 'Open demo project' },
+  { id: 'openHelp', label: 'Help' },
 ]
 
 
