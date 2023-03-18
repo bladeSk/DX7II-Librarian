@@ -123,10 +123,11 @@ export default class App extends React.PureComponent<Props, State> {
                   buf: new Uint8Array(buf),
                   x: dragEvt.clientX,
                   y: dragEvt.clientY - offsetY,
+                  origin: 'file',
                 })))
               })
             }}
-          >Drop .syx here to load a cartridge</FileDrop>
+          >Drop .syx files here to import DX7II/DX7 cartridges</FileDrop>
 
           <SysExReceiver
             onSysExReceived={(data) => {
@@ -134,7 +135,7 @@ export default class App extends React.PureComponent<Props, State> {
               // to be sent, flooding the app with unknown data windows
               if (!KNOWN_DATA_LENGTHS.includes(data.length)) return
 
-              this.openFileAtRandomLocation('Received SysEx', data)
+              this.openFileAtRandomLocation('Received SysEx', data, 'midi')
             }}
           />
         </DragNDropProvider>
@@ -143,7 +144,14 @@ export default class App extends React.PureComponent<Props, State> {
   }
 
   private openFiles(
-    files: Array<{ name: string, buf: Uint8Array, x: number, y: number, id?: string }>,
+    files: {
+      name: string,
+      buf: Uint8Array,
+      x: number,
+      y: number,
+      id?: string,
+      origin?: FileWithMeta['origin'],
+    }[],
   ) {
     let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
 
@@ -151,8 +159,8 @@ export default class App extends React.PureComponent<Props, State> {
       return {
         fileName: file.name,
         buf: new Uint8Array(file.buf),
-        xPos: file.x + i * 24,
-        yPos: file.y + i * 24,
+        xPos: file.x + i * 32,
+        yPos: file.y + i * 32,
         id: file.id || `${+new Date()}_${i}`,
         zIndex: maxZIndex + i + 1,
       }
@@ -165,7 +173,7 @@ export default class App extends React.PureComponent<Props, State> {
     }, () => this.serializeState())
   }
 
-  private openFileAtRandomLocation(name: string, buf: Uint8Array) {
+  private openFileAtRandomLocation(name: string, buf: Uint8Array, origin: FileWithMeta['origin']) {
     let w = Math.max(200, window.innerWidth - 440)
     let h = Math.max(200, window.innerHeight - 500)
 
@@ -174,14 +182,15 @@ export default class App extends React.PureComponent<Props, State> {
       buf,
       x: Math.floor(Math.random() * w),
       y: Math.floor(Math.random() * h),
+      origin,
     }])
   }
 
   private handleMenuAction = (actionId: string) => {
     if (actionId == 'newVoiceCart') {
-      this.openFileAtRandomLocation('New Voice Cart', DX7VoiceCart.createEmpty().buildCartDX7II())
+      this.openFileAtRandomLocation('New Voice Cart', DX7VoiceCart.createEmpty().buildCartDX7II(), 'user')
     } else if (actionId == 'newPerfCart') {
-      this.openFileAtRandomLocation('New Performance Cart', DX7PerfCart.createEmpty().buildCart())
+      this.openFileAtRandomLocation('New Performance Cart', DX7PerfCart.createEmpty().buildCart(), 'user')
     } else if (actionId == 'demoProject') {
       alert('TODO')
     } else if (actionId == 'openHelp') {

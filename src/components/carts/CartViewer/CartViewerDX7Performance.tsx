@@ -21,15 +21,16 @@ interface State {
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAs', label: <>Save as... <i>DX7II performances</i></> },
-  { id: 'sendSysEx', label: <>Send SysEx <i>DX7II performances</i></> },
   { id: 'rename', label: 'Rename' },
+  { id: 'exportFile', label: <>Export to file... <i>DX7II performances</i></> },
+  { id: 'sendSysEx', label: <>Send via MIDI <i>DX7II performances</i></> },
 ]
 
 const ACTIONS_CHANGED: WindowAction[] = [
-  ...ACTIONS,
-  { id: 'store', label: 'Store changes' },
-  { id: 'revert', label: 'Revert changes' },
+  { id: 'save', label: 'Save' },
+  ACTIONS[0],
+  { id: 'revert', label: 'Undo all changes' },
+  ...ACTIONS.slice(1),
 ]
 
 
@@ -89,6 +90,12 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
   }
 
   private handleClose = () => {
+    if (this.state.changed) {
+      if (!confirm('Close cartridge and discard all changes?')) return
+    } else if (this.props.file.origin == 'midi' || this.props.file.origin == 'user') {
+      if (!confirm('Close cartridge?')) return
+    }
+
     this.props.onClose(this.props.file)
   }
 
@@ -104,21 +111,20 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     let cart = this.state.editedCart
     if (!cart) return
 
-    if (actionId == 'saveAs') {
+    if (actionId == 'exportFile') {
       let data = cart.buildCart()
 
       saveFileAs(data, this.state.editedName)
         .then((newFileName) => {
           if (!newFileName) return // aborted
 
-          let newFile: FileWithMeta = {
-            ...this.props.file,
-            buf: data,
-            fileName: newFileName,
-            id: `${+new Date()}_0`,
+          if (!this.state.changed) { // change the cart origin to "file" - the user has the exact copy on disk
+            this.props.onSave?.(this.props.file, {
+              ...this.props.file,
+              origin: 'file',
+              id: `${+new Date()}_0`,
+            })
           }
-
-          this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
     } else if (actionId == 'revert') {
@@ -141,11 +147,12 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       if (!name) return
 
       this.setState({ editedName: name, changed: true })
-    } else if (actionId == 'store') {
+    } else if (actionId == 'save') {
       this.props.onSave?.(this.props.file, {
         ...this.props.file,
         fileName: this.state.editedName,
         buf: cart.buildCart(),
+        origin: 'user',
         id: `${+new Date()}_0`,
       })
     }

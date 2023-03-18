@@ -21,17 +21,18 @@ interface State {
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAsII', label: <>Save as... <i>DX7II</i></> },
-  { id: 'saveAsI', label: <>Save as... <i>DX7</i></> },
-  { id: 'sendSysExII', label: <>Send SysEx <i>DX7II voices</i></> },
-  { id: 'sendSysExI', label: <>Send SysEx <i>DX7 voices</i></> },
   { id: 'rename', label: 'Rename' },
+  { id: 'exportFileII', label: <>Export to file... <i>DX7II</i></> },
+  { id: 'exportFileI', label: <>Export to file... <i>DX7</i></> },
+  { id: 'sendSysExII', label: <>Send via MIDI <i>DX7II voices</i></> },
+  { id: 'sendSysExI', label: <>Send via MIDI <i>DX7 voices</i></> },
 ]
 
 const ACTIONS_CHANGED: WindowAction[] = [
-  ...ACTIONS,
-  { id: 'store', label: 'Store changes' },
-  { id: 'revert', label: 'Revert changes' },
+  { id: 'save', label: 'Save' },
+  ACTIONS[0],
+  { id: 'revert', label: 'Undo all changes' },
+  ...ACTIONS.slice(1),
 ]
 
 
@@ -95,6 +96,12 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
   }
 
   private handleClose = () => {
+    if (this.state.changed) {
+      if (!confirm('Close cartridge and discard all changes?')) return
+    } else if (this.props.file.origin == 'midi' || this.props.file.origin == 'user') {
+      if (!confirm('Close cartridge?')) return
+    }
+
     this.props.onClose(this.props.file)
   }
 
@@ -110,21 +117,30 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     let cart = this.state.editedCart
     if (!cart) return
 
-    if (actionId == 'saveAsI' || actionId == 'saveAsII') {
-      let data = actionId == 'saveAsI' ? cart.buildCartDX7() : cart.buildCartDX7II()
+    if (actionId == 'exportFileI' || actionId == 'exportFileII') {
+      let data = actionId == 'exportFileI' ? cart.buildCartDX7() : cart.buildCartDX7II()
 
       saveFileAs(data, this.state.editedName)
         .then((newFileName) => {
           if (!newFileName) return // aborted
 
-          let newFile: FileWithMeta = {
-            ...this.props.file,
-            buf: data,
-            fileName: newFileName,
-            id: `${+new Date()}_0`,
+          if (!this.state.changed) { // change the cart origin to "file" - the user has the exact copy on disk
+            this.props.onSave?.(this.props.file, {
+              ...this.props.file,
+              origin: 'file',
+              id: `${+new Date()}_0`,
+            })
           }
 
-          this.props.onSave?.(this.props.file, newFile)
+          // old "save as" logic - replaces the open cart with saved file - might use this in Electron app
+          // let newFile: FileWithMeta = {
+          //   ...this.props.file,
+          //   buf: data,
+          //   fileName: newFileName,
+          //   id: `${+new Date()}_0`,
+          // }
+
+          // this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
     } else if (actionId == 'revert') {
@@ -155,11 +171,12 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       if (!name) return
 
       this.setState({ editedName: name, changed: true })
-    } else if (actionId == 'store') {
+    } else if (actionId == 'save') {
       this.props.onSave?.(this.props.file, {
         ...this.props.file,
         fileName: this.state.editedName,
         buf: cart.buildCartDX7II(),
+        origin: 'user',
         id: `${+new Date()}_0`,
       })
     }

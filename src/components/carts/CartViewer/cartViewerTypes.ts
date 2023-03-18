@@ -20,4 +20,5 @@ export interface FileWithMeta {
   yPos: number
   id: string
   zIndex: number
+  origin?: 'file' | 'midi' | 'user'
 }
