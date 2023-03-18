@@ -67,11 +67,11 @@
 
 .App__helpButton {
   margin-left: 16px;
-  fill: $accentColor1;
+  color: $accentColor1;
   cursor: pointer;
 
   &:hover {
-    fill: lighten($accentColor1, 10%);
+    color: lighten($accentColor1, 10%);
   }
 }
 
@@ -99,7 +99,24 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba($accentColor1, 0.8);
-  color: $bgColor;
-  font-size: 40px;
+  background: rgba($accentColor1, 0.9);
+  color: $textColor;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.App__sendingDataOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba($bgColor, 0.9);
+  color: $textColor;
+  font-size: 32px;
+  font-weight: bold;
 }

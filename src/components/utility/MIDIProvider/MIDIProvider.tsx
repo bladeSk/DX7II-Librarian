@@ -9,12 +9,14 @@ interface State {
   midi?: WebMidi.MIDIAccess
   inputDevice?: WebMidi.MIDIInput
   outputDevice?: WebMidi.MIDIOutput
+  sendingData: boolean
 }
 
 export interface MIDIContextData {
   midi?: WebMidi.MIDIAccess
   inputDevice?: WebMidi.MIDIInput
   outputDevice?: WebMidi.MIDIOutput
+  sendingData: boolean
   setInputDevice: (deviceId: string) => void
   setOutputDevice: (deviceId: string) => void
   sendData: (buf: Uint8Array) => void
@@ -31,7 +33,9 @@ export default class MIDIProvider extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    this.state = {}
+    this.state = {
+      sendingData: false,
+    }
   }
 
   componentDidMount(): void {
@@ -58,6 +62,7 @@ export default class MIDIProvider extends React.Component<Props, State> {
       midi: this.state.midi,
       inputDevice: this.state.inputDevice,
       outputDevice: this.state.outputDevice,
+      sendingData: this.state.sendingData,
       setInputDevice: this.setInputDevice,
       setOutputDevice: this.setOutputDevice,
       sendData: this.sendData,
@@ -82,7 +87,11 @@ export default class MIDIProvider extends React.Component<Props, State> {
 
   private sendData = (buf: Uint8Array): void => {
     if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
-    return this.state.outputDevice.send(buf)
+
+    this.setState({ sendingData: true })
+    setTimeout(() => this.setState({ sendingData: false }), 2000)
+
+    this.state.outputDevice.send(buf)
   }
 
   private onMidiStateChanged = (e: any) => {

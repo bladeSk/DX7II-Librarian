@@ -50,11 +50,15 @@ export default class App extends React.PureComponent<Props, State> {
           <header className="App__header">
             <div className="App__title">
               <div className="App__logo">
-                <h1><img src={logoURL} alt="DX7II" />Librarian</h1>
+                <h1><img src={logoURL} alt="DX7II" draggable={false} />Librarian</h1>
 
-                <QuestionSvg className="App__helpButton" onClick={this.handleHelpClick} />
+                <span className="App__helpButton" title="Help">
+                  <QuestionSvg onClick={this.handleHelpClick} />
+                </span>
 
-                <a href="https://github.com/bladeSk/dx7ii-librarian"><GithubSvg /></a>
+                <a href="https://github.com/bladeSk/dx7ii-librarian" title="Project Github" target="_blank" draggable={false}>
+                  <GithubSvg />
+                </a>
               </div>
 
               <div className="App__subTitle">
@@ -74,18 +78,22 @@ export default class App extends React.PureComponent<Props, State> {
           <main className={clsx('App__body', isEmpty && 'App__body_empty')}>
             {isEmpty && <p>Drop a .syx file here or send SysEx from a DX7 via MIDI.</p>}
 
-            <MIDIContext.Consumer>{(midiCtx) => this.state.sysExFiles.map((sysExFile) => {
-              return <CartViewer
-                key={sysExFile.id}
-                file={sysExFile}
-                onClose={this.handleFileWindowClose}
-                onFocus={this.handleFileWindowFocus}
-                onPosChanged={this.handlePosChanged}
-                onSave={this.handleFileUpdate}
-                onOpenEditor={this.handleOpenEditor}
-                onSendSysEx={midiCtx.sendData}
-              />
-            })}</MIDIContext.Consumer>
+            <MIDIContext.Consumer>{(midiCtx) => <>
+              {this.state.sysExFiles.map((sysExFile) => {
+                return <CartViewer
+                  key={sysExFile.id}
+                  file={sysExFile}
+                  onClose={this.handleFileWindowClose}
+                  onFocus={this.handleFileWindowFocus}
+                  onPosChanged={this.handlePosChanged}
+                  onSave={this.handleFileUpdate}
+                  onOpenEditor={this.handleOpenEditor}
+                  onSendSysEx={midiCtx.sendData}
+                />
+              })}
+
+              {midiCtx.sendingData && <div className="App__sendingDataOverlay">Sending SysEx data...</div>}
+            </>}</MIDIContext.Consumer>
           </main>
 
           {editData?.type == 'DX7Voice' && <InlineDX7VoiceEditor
