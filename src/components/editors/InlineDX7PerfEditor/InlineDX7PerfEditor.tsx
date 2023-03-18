@@ -100,8 +100,8 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
               value={inputs.voiceALoc}
               onChange={this.handleSelectChange.bind(this, 'voiceALoc')}
             >
-              <option value="int">Int</option>
-              <option value="cart">Cart</option>
+              <option value="int">Internal</option>
+              <option value="cart">Cartridge</option>
             </select> {}
 
             <input
@@ -122,8 +122,8 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
               value={inputs.voiceBLoc}
               onChange={this.handleSelectChange.bind(this, 'voiceBLoc')}
             >
-              <option value="int">Int</option>
-              <option value="cart">Cart</option>
+              <option value="int">Internal</option>
+              <option value="cart">Cartridge</option>
             </select> {}
 
             <input
@@ -149,7 +149,7 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
             /> {}
 
             <span className="InlineDX7PerfEditor__noteName">
-              {formatNoteName(parseInt(inputs.splitPoint || '0'))}
+              <b>{formatNoteName(parseInt(inputs.splitPoint || '0'))}</b>
             </span>
           </div>
         </div>

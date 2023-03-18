@@ -43,6 +43,7 @@
   background: $accentColor1;
   cursor: move;
   color: $bgColorL1;
+  user-select: none;
 }
 
 .DraggableWindow__title {
