@@ -28,9 +28,8 @@ const ACTIONS: WindowAction[] = [
 
 const ACTIONS_CHANGED: WindowAction[] = [
   { id: 'save', label: 'Save' },
-  ACTIONS[0],
   { id: 'revert', label: 'Undo all changes' },
-  ...ACTIONS.slice(1),
+  ...ACTIONS,
 ]
 
 
