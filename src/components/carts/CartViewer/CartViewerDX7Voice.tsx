@@ -159,6 +159,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
       this.props.onSave?.(this.props.file, {
         ...this.props.file,
         fileName: this.state.editedName,
+        buf: cart.buildCartDX7II(),
         id: `${+new Date()}_0`,
       })
     }

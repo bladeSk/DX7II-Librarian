@@ -145,6 +145,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
       this.props.onSave?.(this.props.file, {
         ...this.props.file,
         fileName: this.state.editedName,
+        buf: cart.buildCart(),
         id: `${+new Date()}_0`,
       })
     }
