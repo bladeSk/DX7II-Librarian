@@ -21,17 +21,17 @@ interface State {
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAsII', label: 'Save as DX7II voices...'},
-  { id: 'saveAsI', label: 'Save as DX7 voices...'},
-  { id: 'sendSysExII', label: 'Send SysEx (DX7II voices)'},
-  { id: 'sendSysExI', label: 'Send SysEx (DX7 voices)'},
-  { id: 'rename', label: 'Rename'},
+  { id: 'saveAsII', label: <>Save as... <i>DX7II</i></> },
+  { id: 'saveAsI', label: <>Save as... <i>DX7</i></> },
+  { id: 'sendSysExII', label: <>Send SysEx <i>DX7II voices</i></> },
+  { id: 'sendSysExI', label: <>Send SysEx <i>DX7 voices</i></> },
+  { id: 'rename', label: 'Rename' },
 ]
 
 const ACTIONS_CHANGED: WindowAction[] = [
   ...ACTIONS,
-  { id: 'store', label: 'Store changes'},
-  { id: 'revert', label: 'Revert changes'},
+  { id: 'store', label: 'Store changes' },
+  { id: 'revert', label: 'Revert changes' },
 ]
 
 

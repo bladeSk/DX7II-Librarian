@@ -2,9 +2,9 @@ import React from 'react'
 import clsx from 'clsx'
 import { FileDrop } from 'react-file-drop'
 import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
-import logoURL from './assets/dx7ii.png'
-import QuestionSvg from './assets/icons/question-circle.svg'
-import GithubSvg from './assets/icons/github-fill.svg'
+import logoURL from 'assets/dx7ii.png'
+import QuestionSvg from 'assets/icons/question-circle.svg'
+import GithubSvg from 'assets/icons/github-fill.svg'
 import MIDIProvider, { MIDIContext } from 'components/utility/MIDIProvider/MIDIProvider'
 import MIDISelector from 'components/utility/MIDISelector/MIDISelector'
 import { FileWithMeta } from 'components/carts/CartViewer/cartViewerTypes'
@@ -13,7 +13,9 @@ import DragNDropProvider from 'components/utility/DragNDropProvider/DragNDropPro
 import InlineDX7VoiceEditor from 'components/editors/InlineDX7VoiceEditor/InlineDX7VoiceEditor'
 import InlineDX7PerfEditor from 'components/editors/InlineDX7PerfEditor/InlineDX7PerfEditor'
 import SysExReceiver from 'components/utility/SysExReceiver/SysExReceiver'
-import DraggableWindow from 'components/carts/DraggableWindow/DraggableWindow'
+import MenuButton, { MenuButtonAction } from 'components/basic/MenuButton/MenuButton'
+import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
+import { DX7PerfCart } from 'core/models/DX7PerfCart'
 import './App.scss'
 
 export interface Props {
@@ -61,6 +63,12 @@ export default class App extends React.PureComponent<Props, State> {
             </div>
 
             <MIDISelector />
+
+            <MenuButton className="App__mainMenuButton"
+              hAlign="r"
+              actions={MENU_ACTIONS}
+              onAction={this.handleMenuAction}
+            />
           </header>
 
           <main className={clsx('App__body', isEmpty && 'App__body_empty')}>
@@ -118,15 +126,7 @@ export default class App extends React.PureComponent<Props, State> {
               // to be sent, flooding the app with unknown data windows
               if (!KNOWN_DATA_LENGTHS.includes(data.length)) return
 
-              let w = Math.max(200, window.innerWidth - 440)
-              let h = Math.max(200, window.innerHeight - 500)
-
-              this.openFiles([{
-                name: 'Received SysEx',
-                buf: data,
-                x: Math.floor(Math.random() * w),
-                y: Math.floor(Math.random() * h),
-              }])
+              this.openFileAtRandomLocation('Received SysEx', data)
             }}
           />
         </DragNDropProvider>
@@ -155,6 +155,28 @@ export default class App extends React.PureComponent<Props, State> {
     this.setState({
       sysExFiles: [ ...this.state.sysExFiles, ...filesToAdd ]
     }, () => this.serializeState())
+  }
+
+  private openFileAtRandomLocation(name: string, buf: Uint8Array) {
+    let w = Math.max(200, window.innerWidth - 440)
+    let h = Math.max(200, window.innerHeight - 500)
+
+    this.openFiles([{
+      name,
+      buf,
+      x: Math.floor(Math.random() * w),
+      y: Math.floor(Math.random() * h),
+    }])
+  }
+
+  private handleMenuAction = (actionId: string) => {
+    if (actionId == 'newVoiceCart') {
+      this.openFileAtRandomLocation('New Voice Cart', DX7VoiceCart.createEmpty().buildCartDX7II())
+    } else if (actionId == 'newPerfCart') {
+      this.openFileAtRandomLocation('New Performance Cart', DX7PerfCart.createEmpty().buildCart())
+    } else if (actionId == 'demoProject') {
+
+    }
   }
 
   private handleFileWindowClose = (file: FileWithMeta) => {
@@ -265,6 +287,14 @@ export default class App extends React.PureComponent<Props, State> {
     }
   }
 }
+
+
+const MENU_ACTIONS: MenuButtonAction[] = [
+  { id: 'newVoiceCart', label: 'New voice cart' },
+  { id: 'newPerfCart', label: 'New performance cart' },
+  { id: 'demoProject', label: 'Open demo project' },
+]
+
 
 const DX7_1_CART_LENGTH = 5232
 const DX7_2_CART_LENGTH = 21404

@@ -1,48 +1,44 @@
 import React from 'react'
 import clsx from 'clsx'
-import MenuSvg from 'assets/icons/menu.svg'
 import XSvg from 'assets/icons/x.svg'
+import MenuButton, { MenuButtonAction } from 'components/basic/MenuButton/MenuButton'
 import './DraggableWindow.scss'
 
-export interface Props {
+export interface Props<Taction = any> {
   className?: string
   children?: React.ReactNode
   title?: React.ReactNode
-  actions?: WindowAction[]
+  actions?: MenuButtonAction<Taction>[]
   titleExtra?: React.ReactNode
   xPos?: number
   yPos?: number
   zIndex?: number
   variant?: '1' | '2' | '3' | '4'
-  onAction?: (actionId: string) => void
+  onAction?: (actionId: Taction) => void
   onFocus?: () => void
   onMove?: (xPos: number, yPos: number) => void
   onClose?: () => void
 }
 
-interface State {
-  actionsOpen: boolean
-}
+export type WindowAction<T = any> = MenuButtonAction<T>
 
-export interface WindowAction {
-  id: string
-  label: React.ReactNode
+interface State {
 }
 
 /**
  * Draggable container.
  */
-export default class DraggableWindow extends React.PureComponent<Props, State> {
+export default class DraggableWindow<Taction> extends React.PureComponent<Props<Taction>, State> {
   private ref = React.createRef<HTMLDivElement>()
   private dragStartPos?: [number, number]
   private curDragPos?: [number, number]
   private elmPos: [number, number]
 
-  private static defaultProps: Partial<Props> = {
+  static defaultProps: Partial<Props> = {
     variant: '1',
   }
 
-  constructor(props: Props) {
+  constructor(props: Props<Taction>) {
     super(props)
 
     this.state = {
@@ -54,12 +50,11 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
 
   componentDidMount(): void {
     this.updatePos()
-    document.addEventListener('mousedown', this.handleDocumentMouseDown, true)
     document.addEventListener('mousemove', this.handleDocumentMouseMove)
     document.addEventListener('mouseup', this.handleDocumentMouseUp)
   }
 
-  componentDidUpdate(prevProps: Props, prevState: State): void {
+  componentDidUpdate(prevProps: Props<Taction>, prevState: State): void {
     if (this.elmPos[0] != this.props.xPos || this.elmPos[1] != this.props.yPos) {
       this.elmPos = [ this.props.xPos || 0, this.props.yPos || 0 ]
       this.updatePos()
@@ -71,7 +66,6 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
   }
 
   componentWillUnmount(): void {
-    document.removeEventListener('mousedown', this.handleDocumentMouseDown, true)
     document.removeEventListener('mousemove', this.handleDocumentMouseMove)
     document.removeEventListener('mouseup', this.handleDocumentMouseUp)
   }
@@ -79,7 +73,6 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
   render(): React.ReactElement {
     let classNames = clsx(
       'DraggableWindow',
-      this.state.actionsOpen && 'DraggableWindow_actionsOpen',
       `DraggableWindow_variant${this.props.variant}`,
       this.props.className
     )
@@ -90,21 +83,12 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
       onMouseDownCapture={this.handleWindowMouseDownCapture}
     >
       <div className="DraggableWindow__header" onMouseDown={this.handleHeaderMouseDown}>
-        {this.props.actions && <div className="DraggableWindow__actions">
-          <MenuSvg
-            className="DraggableWindow__actionsIcon"
-            onMouseDown={this.handleMenuClick}
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-          />
-
-          <div className="DraggableWindow__actionsDropdown">
-            {this.props.actions.map((action, i) => <div
-              className="DraggableWindow__action"
-              key={i}
-              onMouseDown={e => this.handleActionClick(e, action.id)}
-            >{action.label}</div>)}
-          </div>
-        </div>}
+        {this.props.actions && <MenuButton className="DraggableWindow__actions"
+          hAlign="l"
+          variant={this.props.variant}
+          actions={this.props.actions}
+          onAction={this.props.onAction}
+        />}
 
         <div className="DraggableWindow__title">{this.props.title}</div>
         {this.props.titleExtra && <div className="DraggableWindow__titleExtra">{this.props.titleExtra}</div>}
@@ -148,14 +132,6 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
     this.props.onFocus?.()
   }
 
-  private handleDocumentMouseDown = (e: MouseEvent) => {
-    if (!this.state.actionsOpen || !this.ref.current) return
-
-    if (this.ref.current.querySelector('.DraggableWindow__actions')?.contains(e.target as any)) return
-
-    this.setState({ actionsOpen: false })
-  }
-
   private handleDocumentMouseMove = (e: MouseEvent) => {
     if (!this.dragStartPos) return
 
@@ -177,24 +153,9 @@ export default class DraggableWindow extends React.PureComponent<Props, State> {
     this.props.onMove?.(Math.max(0, this.elmPos[0]), Math.max(0, this.elmPos[1]))
   }
 
-  private handleMenuClick = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    let actionsOpen = !this.state.actionsOpen
-    this.setState({ actionsOpen })
-  }
-
   private handleCloseClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     this.props.onClose?.()
-  }
-
-  private handleActionClick(e: React.MouseEvent, actionId: string) {
-    e.preventDefault()
-    e.stopPropagation()
-    this.props.onAction?.(actionId)
-    this.setState({ actionsOpen: false })
   }
 }

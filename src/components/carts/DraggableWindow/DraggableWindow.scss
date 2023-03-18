@@ -14,21 +14,6 @@
   .DraggableWindow__header {
     background: $accentColor2;
   }
-
-  .DraggableWindow__action {
-    background: $accentColor2D1;
-
-    &:hover {
-      background: $textColor;
-      color: $bgColor;
-    }
-  }
-}
-
-.DraggableWindow_variant2.DraggableWindow_actionsOpen {
-  .DraggableWindow__actionsIcon {
-    background: $accentColor2D1;
-  }
 }
 
 .DraggableWindow_variant3 {
@@ -58,16 +43,21 @@
   background: $accentColor1;
   cursor: move;
   color: $bgColorL1;
-  padding: 8px;
 }
 
 .DraggableWindow__title {
   font-weight: bold;
   font-size: 20px;
   flex-grow: 1;
+  line-height: 1;
+  padding: 4px 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &:first-child {
+    margin-left: 8px;
+  }
 }
 
 .DraggableWindow__titleExtra {
@@ -75,64 +65,10 @@
 }
 
 .DraggableWindow__actions {
-  position: relative;
-  margin: -8px 8px -8px -8px;
-}
-
-.DraggableWindow__actionsIcon {
-  display: block;
-  height: 24px;
-  padding: 8px;
-  cursor: pointer;
-
-  &:hover {
-    color: $textColor;
-  }
-}
-
-.DraggableWindow__actionsDropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-}
-
-.DraggableWindow_actionsOpen {
-  .DraggableWindow__actions {
-    z-index: 3;
-  }
-
-  .DraggableWindow__actionsIcon {
-    background: $accentColor1D1;
-    color: $textColor;
-  }
-
-  .DraggableWindow__actionsDropdown {
-    display: block;
-  }
-}
-
-.DraggableWindow__action {
-  white-space: nowrap;
-  background: $accentColor1D1;
-  color: $textColor;
-  cursor: pointer;
-  padding: 8px 16px;
-  font-weight: bold;
-  font-size: 14px;
-
-  &:hover {
-    background: $textColor;
-    color: $bgColor;
-  }
-
-  & + & {
-    border-top: solid 1px $bgColorL1;
-  }
+  margin: 0 4px 0 0;
 }
 
 .DraggableWindow__close {
-  margin: -8px -8px -8px 0;
   padding: 8px;
   cursor: pointer;
 

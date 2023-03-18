@@ -29,6 +29,10 @@
   height: 60px;
 }
 
+.App__title {
+  flex-grow: 1;
+}
+
 .App__logo {
   display: flex;
   align-items: flex-end;
@@ -75,6 +79,10 @@
   font-size: 14px;
   color: $textColorD1;
   margin-top: 4px;
+}
+
+.App__mainMenuButton {
+  margin-left: 16px;
 }
 
 .App .file-drop-target {
