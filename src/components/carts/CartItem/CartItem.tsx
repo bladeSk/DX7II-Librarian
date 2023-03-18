@@ -19,8 +19,9 @@ export interface Props<T = any> {
 }
 
 interface State {
-  dragOverBefore: boolean
-  dragOverItem: boolean
+  draggingOverBefore: boolean
+  draggingOverItem: boolean
+  isDragged: boolean
 }
 
 /**
@@ -31,30 +32,31 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
     super(props)
 
     this.state = {
-      dragOverBefore: false,
-      dragOverItem: false,
+      draggingOverBefore: false,
+      draggingOverItem: false,
+      isDragged: false,
     }
   }
 
   componentDidUpdate(prevProps: Props, prevState: State): void {
     if (
       this.props.dragNDropCtx.type != this.props.dataType &&
-      (this.state.dragOverBefore || this.state.dragOverItem)
+      (this.state.draggingOverBefore || this.state.draggingOverItem)
     ) {
       this.setState({
-        dragOverBefore: false,
-        dragOverItem: false,
+        draggingOverBefore: false,
+        draggingOverItem: false,
       })
     }
   }
 
   render(): React.ReactElement {
     let { dataType, data, dragNDropCtx, onDrop, index } = this.props
-    let { dragOverBefore, dragOverItem } = this.state
+    let { draggingOverBefore, draggingOverItem, isDragged } = this.state
 
     let classNames = clsx(
       'CartItem',
-      dragNDropCtx.type == dataType && dragNDropCtx.data == data && 'CartItem_dragged',
+      isDragged && 'CartItem_dragged',
       this.props.className
     )
 
@@ -62,8 +64,14 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
       className={classNames}
       draggable
       onClick={this.handleEditClick}
-      onDragStart={() => dragNDropCtx.setData(this.props.dataType, this.props.data)}
-      onDragEnd={() => dragNDropCtx.clearData()}
+      onDragStart={() => {
+        dragNDropCtx.setData(this.props.dataType, this.props.data)
+        setTimeout(() => this.setState({ isDragged: true })) // setTimeout ensures the preview is not greyed out
+      }}
+      onDragEnd={() => {
+        dragNDropCtx.clearData()
+        setTimeout(() => this.setState({ isDragged: false }))
+      }}
     >
       <div className="CartItem__dragHint">
         <DragIndicatorSvg className="CartItem__dragIndicator" />
@@ -76,18 +84,18 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
       {this.props.isDX7II && <span className="CartItem__dx7ii" title="Uses DX7II features"><IISvg /></span>}
 
       {dragNDropCtx.type == dataType && dragNDropCtx.data != data && <>
-        <div className={clsx('CartItem__dragAreaBefore', dragOverBefore && 'CartItem__dragAreaBefore_active')}
-          onDragEnter={() => this.setState({ dragOverBefore: true })}
-          onDragLeave={() => this.setState({ dragOverBefore: false })}
+        <div className={clsx('CartItem__dragAreaBefore', draggingOverBefore && 'CartItem__dragAreaBefore_active')}
+          onDragEnter={() => this.setState({ draggingOverBefore: true })}
+          onDragLeave={() => this.setState({ draggingOverBefore: false })}
           onDrop={() => {
             onDrop(dragNDropCtx.data, index, 'before')
             dragNDropCtx.clearData()
           }}
         />
 
-        <div className={clsx('CartItem__dragAreaItem', dragOverItem && 'CartItem__dragAreaItem_active')}
-          onDragEnter={() => this.setState({ dragOverItem: true })}
-          onDragLeave={() => this.setState({ dragOverItem: false })}
+        <div className={clsx('CartItem__dragAreaItem', draggingOverItem && 'CartItem__dragAreaItem_active')}
+          onDragEnter={() => this.setState({ draggingOverItem: true })}
+          onDragLeave={() => this.setState({ draggingOverItem: false })}
           onDrop={() => {
             onDrop(dragNDropCtx.data, index, 'on')
             dragNDropCtx.clearData()
