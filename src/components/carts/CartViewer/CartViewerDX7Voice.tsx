@@ -61,7 +61,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     return <DraggableWindow
       className={classNames}
       title={<>
-        {this.state.changed && <span className="CartViewer__changed">*</span>}
+        {this.state.changed && <span className="CartViewer__changed" title="Unsaved changes">●</span>}
         {this.state.editedName.replace(/\.syx$/i, '')}
       </>}
       titleExtra={<div className="CartViewer__bankToggle"
