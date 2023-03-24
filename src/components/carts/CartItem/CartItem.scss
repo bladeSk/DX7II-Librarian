@@ -5,6 +5,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  color: rgba($textColor, 0.9);
 
   &:hover {
     background: $bgColor;
