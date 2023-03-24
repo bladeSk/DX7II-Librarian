@@ -22,6 +22,7 @@ interface State {
 
 const ACTIONS: WindowAction[] = [
   { id: 'rename', label: 'Rename' },
+  { id: '---', label: '' },
   { id: 'exportFileII', label: <>Export to file... <i>DX7II</i></> },
   { id: 'exportFileI', label: <>Export to file... <i>DX7</i></> },
   { id: 'sendSysExII', label: <>Send via MIDI <i>DX7II voices</i></> },

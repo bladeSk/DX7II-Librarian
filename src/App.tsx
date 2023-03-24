@@ -311,7 +311,12 @@ export default class App extends React.PureComponent<Props, State> {
 const MENU_ACTIONS: MenuButtonAction[] = [
   { id: 'newVoiceCart', label: 'New voice cart' },
   { id: 'newPerfCart', label: 'New performance cart' },
-  { id: 'demoProject', label: 'Open demo project' },
+  { id: '---', label: '' },
+  { id: 'importDemo', label: 'Import demo voice cart' },
+  { id: 'importDX7IIA', label: 'Import DX7II factory ROM A' },
+  { id: 'importDX7IIB', label: 'Import DX7II factory ROM B' },
+  { id: 'importDX7', label: 'Import DX7 ROM 1' },
+  { id: '---', label: '' },
   { id: 'openHelp', label: 'Help' },
 ]
 

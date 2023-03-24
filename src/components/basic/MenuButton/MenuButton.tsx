@@ -61,11 +61,15 @@ export default class MenuButton<T> extends React.PureComponent<Props<T>, State> 
       </div>
 
       <div className="MenuButton__dropdown">
-        {this.props.actions.map((action, i) => <div
-          className="MenuButton__dropdownItem"
-          key={i}
-          onClick={this.handleItemClick.bind(this, action.id)}
-        >{action.label}</div>)}
+        {this.props.actions.map((action, i) => {
+          if (action.id == '---') return <div className="MenuButton__separatorItem" key={i} />
+
+          return <div
+            className="MenuButton__dropdownItem"
+            key={i}
+            onClick={this.handleItemClick.bind(this, action.id)}
+          >{action.label}</div>
+        })}
       </div>
     </div>
   }

@@ -43,6 +43,10 @@
   }
 }
 
+.MenuButton__separatorItem {
+  border-top: solid 2px $textColor;
+}
+
 .MenuButton__dropdownItem {
   white-space: nowrap;
   background: $bgColorD1;
@@ -72,6 +76,10 @@
     background: $accentColor1D1;
   }
 
+  .MenuButton__separatorItem {
+    border-top: solid 2px $bgColor;
+  }
+
   .MenuButton__dropdownItem {
     background: $accentColor1D1;
 
@@ -89,6 +97,10 @@
 .MenuButton_variant2 {
   &.MenuButton_open .MenuButton__label {
     background: $accentColor2D1;
+  }
+
+  .MenuButton__separatorItem {
+    border-top: solid 2px $bgColor;
   }
 
   .MenuButton__dropdownItem {
