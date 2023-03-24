@@ -16,6 +16,7 @@ import SysExReceiver from 'components/utility/SysExReceiver/SysExReceiver'
 import MenuButton, { MenuButtonAction } from 'components/basic/MenuButton/MenuButton'
 import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
 import { DX7PerfCart } from 'core/models/DX7PerfCart'
+import { handleError } from 'core/utils/errorHandling'
 import './App.scss'
 
 export interface Props {
@@ -30,6 +31,11 @@ interface State {
   }
 }
 
+interface XYPos {
+  x: number
+  y: number
+}
+
 /**
  * Main component of the application.
  */
@@ -38,6 +44,14 @@ export default class App extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = App.deserializeState()
+  }
+
+  componentDidMount(): void {
+    let openFiles = this.state.sysExFiles
+
+    if (!openFiles.length || (openFiles.length == 1 && openFiles[0].id == 'help')) {
+      this.openInitialProject()
+    }
   }
 
   render(): React.ReactElement {
@@ -121,21 +135,19 @@ export default class App extends React.PureComponent<Props, State> {
                 this.openFiles(buffers.map((buf, i) => ({
                   name: files![i].name,
                   buf: new Uint8Array(buf),
-                  x: dragEvt.clientX,
-                  y: dragEvt.clientY - offsetY,
                   origin: 'file',
-                })))
+                })), { x: dragEvt.clientX, y: dragEvt.clientY - offsetY })
               })
             }}
           >Drop .syx files here to import DX7II/DX7 cartridges</FileDrop>
 
           <SysExReceiver
-            onSysExReceived={(data) => {
+            onSysExReceived={(buf) => {
               // prevent auto-importing unknown SysExes - just editing parameters can cause SysEx data
               // to be sent, flooding the app with unknown data windows
-              if (!KNOWN_DATA_LENGTHS.includes(data.length)) return
+              if (!KNOWN_DATA_LENGTHS.includes(buf.length)) return
 
-              this.openFileAtRandomLocation('Received SysEx', data, 'midi')
+              this.openFiles([{ name: 'Received SysEx', buf, origin: 'midi' }])
             }}
           />
         </DragNDropProvider>
@@ -147,20 +159,28 @@ export default class App extends React.PureComponent<Props, State> {
     files: {
       name: string,
       buf: Uint8Array,
-      x: number,
-      y: number,
+      x?: number,
+      y?: number,
       id?: string,
       origin?: FileWithMeta['origin'],
     }[],
-  ) {
+    originXY?: XYPos,
+  ): Promise<void> {
     let maxZIndex = this.state.sysExFiles.reduce((maxVal, f) => Math.max(maxVal, f.zIndex), 0)
+
+    if (!originXY) {
+      originXY =  {
+        x: Math.floor(Math.random() * Math.max(200, window.innerWidth - 440)),
+        y: Math.floor(Math.random() * Math.max(200, window.innerHeight - 500)),
+      }
+    }
 
     let filesToAdd: FileWithMeta[] = files.map((file, i) => {
       return {
         fileName: file.name,
         buf: new Uint8Array(file.buf),
-        xPos: file.x + i * 32,
-        yPos: file.y + i * 32,
+        xPos: file.x || (originXY!.x + i * 32),
+        yPos: file.y || (originXY!.y + i * 32),
         id: file.id || `${+new Date()}_${i}`,
         zIndex: maxZIndex + i + 1,
       }
@@ -168,31 +188,100 @@ export default class App extends React.PureComponent<Props, State> {
 
     filesToAdd.forEach(file => localStorage[`dx7iilr-file-${file.id}`] = toBase64(file.buf))
 
-    this.setState({
-      sysExFiles: [ ...this.state.sysExFiles, ...filesToAdd ]
-    }, () => this.serializeState())
+    return new Promise((res) => {
+      this.setState((prevState: State) => {
+        return {
+          sysExFiles: [ ...prevState.sysExFiles, ...filesToAdd ]
+        }
+      }, () => {
+        this.serializeState()
+        res()
+      })
+    })
   }
 
-  private openFileAtRandomLocation(name: string, buf: Uint8Array, origin: FileWithMeta['origin']) {
-    let w = Math.max(200, window.innerWidth - 440)
-    let h = Math.max(200, window.innerHeight - 500)
+  private openRemoteFiles(uris: string[], originXY?: XYPos): Promise<void> {
+    return Promise.all(uris.map(uri => fetch(uri).then((resp) => {
+      if (!resp.ok) throw new Error('Couldn\'t fetch the file')
+      return resp.arrayBuffer()
+    }))).then((bufs) => {
+      return this.openFiles(bufs.map((buf, i) => ({
+        buf: new Uint8Array(buf),
+        name: uris[i].match(/[^\/]*$/)?.[0] || '',
+        origin: 'file',
+      })), originXY)
+    }).catch(handleError)
+  }
 
-    this.openFiles([{
-      name,
-      buf,
-      x: Math.floor(Math.random() * w),
-      y: Math.floor(Math.random() * h),
-      origin,
-    }])
+  private async openInitialProject() {
+    this.setState({ sysExFiles: [] })
+
+    let uris = [
+      '/carts/Demo Cart.syx',
+      '/carts/DX7II factory A 1-32.syx',
+      '/carts/DX7II factory A 33-64.syx',
+      '/carts/DX7II factory A perf.syx',
+    ]
+
+    let positions = [
+      { x: 30, y: 30 },
+      { x: 480, y: 30 },
+      { x: 870, y: 30 },
+      { x: 1260, y: 30 },
+    ]
+
+    try {
+      let bufs = await Promise.all(uris.map(uri => fetch(uri).then((resp) => {
+        if (!resp.ok) throw new Error('Couldn\'t open demo file')
+        return resp.arrayBuffer()
+      })))
+
+      await this.openFiles(bufs.map((buf, i) => ({
+        buf: new Uint8Array(buf),
+        name: uris[i].match(/[^\/]*$/)?.[0] || '',
+        origin: 'file',
+        ...positions[i],
+      })))
+    } catch(err) {
+      handleError(err)
+    } finally {
+      if (this.state.sysExFiles.find(f => f.id == 'help')) return
+      this.handleHelpClick()
+    }
   }
 
   private handleMenuAction = (actionId: string) => {
     if (actionId == 'newVoiceCart') {
-      this.openFileAtRandomLocation('New Voice Cart', DX7VoiceCart.createEmpty().buildCartDX7II(), 'user')
+      this.openFiles([{
+        name: 'New Voice Cart',
+        buf: DX7VoiceCart.createEmpty().buildCartDX7II(),
+        origin: 'user',
+      }])
     } else if (actionId == 'newPerfCart') {
-      this.openFileAtRandomLocation('New Performance Cart', DX7PerfCart.createEmpty().buildCart(), 'user')
-    } else if (actionId == 'demoProject') {
-      alert('TODO')
+      this.openFiles([{
+        name: 'New Performance Cart',
+        buf: DX7PerfCart.createEmpty().buildCart(),
+        origin: 'user',
+      }])
+    } else if (actionId == 'importDemo') {
+      this.openRemoteFiles(['/carts/Demo Cart.syx'])
+    } else if (actionId == 'importDX7IIA') {
+      this.openRemoteFiles([
+        '/carts/DX7II factory A perf.syx',
+        '/carts/DX7II factory A 1-32.syx',
+        '/carts/DX7II factory A 33-64.syx',
+      ])
+    } else if (actionId == 'importDX7IIB') {
+      this.openRemoteFiles([
+        '/carts/DX7II factory B perf.syx',
+        '/carts/DX7II factory B 1-32.syx',
+        '/carts/DX7II factory B 33-64.syx',
+      ])
+    } else if (actionId == 'importDX7') {
+      this.openRemoteFiles([
+        '/carts/DX7 ROM1A.syx',
+        '/carts/DX7 ROM1B.syx',
+      ])
     } else if (actionId == 'openHelp') {
       this.handleHelpClick()
     }
@@ -250,7 +339,7 @@ export default class App extends React.PureComponent<Props, State> {
         return {
           ...file,
           xPos,
-          yPos
+          yPos,
         }
       })
     }, () => this.serializeState())
