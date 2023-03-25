@@ -125,6 +125,18 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
               id: `${+new Date()}_0`,
             })
           }
+
+          if (confirm('Replace cart with exported file?')) {
+            let newFile: FileWithMeta = {
+              ...this.props.file,
+              buf: data,
+              fileName: newFileName,
+              origin: 'file',
+              id: `${+new Date()}_0`,
+            }
+
+            this.props.onSave?.(this.props.file, newFile)
+          }
         })
         .catch(handleError)
     } else if (actionId == 'revert') {

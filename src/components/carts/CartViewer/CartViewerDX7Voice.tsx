@@ -132,15 +132,17 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
             })
           }
 
-          // old "save as" logic - replaces the open cart with saved file - might use this in Electron app
-          // let newFile: FileWithMeta = {
-          //   ...this.props.file,
-          //   buf: data,
-          //   fileName: newFileName,
-          //   id: `${+new Date()}_0`,
-          // }
+          if (confirm('Replace cart with exported file?')) {
+            let newFile: FileWithMeta = {
+              ...this.props.file,
+              buf: data,
+              fileName: newFileName,
+              origin: 'file',
+              id: `${+new Date()}_0`,
+            }
 
-          // this.props.onSave?.(this.props.file, newFile)
+            this.props.onSave?.(this.props.file, newFile)
+          }
         })
         .catch(handleError)
     } else if (actionId == 'revert') {
