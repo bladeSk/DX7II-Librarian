@@ -9,6 +9,8 @@ import CartViewerDX7Microtuning from './CartViewerDX7Microtuning'
 import CartViewerUnknown from './CartViewerUnknown'
 import CartViewerHelp from './CartViewerHelp'
 
+export type Props = Omit<CartViewerProps<any>, 'cart'>
+
 interface State {
   voiceCart?: DX7VoiceCart
   perfCart?: DX7PerfCart
@@ -20,8 +22,8 @@ interface State {
  * Assumes the contents of the file in props never change, as that would discard the edited changes.
  * It is therefore required to use file.id as a fixed key.
  */
-export default class CartViewer extends React.PureComponent<CartViewerProps<any>, State> {
-  constructor(props: CartViewerProps<any>) {
+export default class CartViewer extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
     super(props)
 
     let voiceCart = DX7VoiceCart.createFromSyx(props.file.buf)
@@ -46,9 +48,9 @@ export default class CartViewer extends React.PureComponent<CartViewerProps<any>
     }  else if (this.state.mctCart) {
       return <CartViewerDX7Microtuning {...this.props} cart={this.state.mctCart} />
     } else if (this.props.file.id == 'help') {
-      return <CartViewerHelp {...this.props} />
+      return <CartViewerHelp {...this.props} cart={null} />
     } else {
-      return <CartViewerUnknown {...this.props} />
+      return <CartViewerUnknown {...this.props} cart={null} />
     }
   }
 }
