@@ -66,7 +66,7 @@ export default class App extends React.PureComponent<Props, State> {
               <div className="App__logo">
                 <h1><img src={logoURL} alt="DX7II" draggable={false} />Librarian</h1>
 
-                <span className="App__helpButton" title="Help">
+                <span className="App__helpButton" title="Open help">
                   <QuestionSvg onClick={this.handleHelpClick} />
                 </span>
 
@@ -361,7 +361,7 @@ export default class App extends React.PureComponent<Props, State> {
     let helpFile = this.state.sysExFiles.find(f => f.id == 'help')
 
     if (helpFile) {
-      this.handleFileWindowClose(helpFile)
+      this.handleFileWindowFocus(helpFile)
     } else {
       this.openFiles([{
         name: 'Help',

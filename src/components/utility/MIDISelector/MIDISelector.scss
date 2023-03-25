@@ -19,14 +19,6 @@
   cursor: help;
 }
 
-.MIDISelector__icon_active {
-  fill: $accentColor1;
-}
-
-.MIDISelector__icon_error {
-  fill: $accentColor3;
-}
-
 .MIDISelector__device + .MIDISelector__device {
   margin-top: 4px;
 }
