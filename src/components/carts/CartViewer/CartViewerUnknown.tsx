@@ -9,8 +9,8 @@ interface State {
 }
 
 const ACTIONS: WindowAction[] = [
-  { id: 'saveAs', label: 'Save as...'},
-  { id: 'sendSysEx', label: 'Send SysEx'},
+  { id: 'exportFile', label: 'Export to file...'},
+  { id: 'sendSysEx', label: 'Send via MIDI'},
 ]
 
 
@@ -70,7 +70,7 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
   }
 
   private handleAction = (actionId: string) => {
-    if (actionId == 'saveAs') {
+    if (actionId == 'exportFile') {
       let data = this.props.file.buf
 
       saveFileAs(data, this.props.file.fileName)
@@ -87,6 +87,12 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
           this.props.onSave?.(this.props.file, newFile)
         })
         .catch(handleError)
+    } else if (actionId == 'sendSysEx') {
+      try {
+        this.props.onSendSysEx?.(this.props.file.buf)
+      } catch (err) {
+        handleError(err)
+      }
     }
   }
 }
