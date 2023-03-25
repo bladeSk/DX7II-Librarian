@@ -2,14 +2,17 @@ import React from 'react'
 import { CartViewerProps } from './cartViewerTypes'
 import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
 import { DX7PerfCart } from 'core/models/DX7PerfCart'
+import { DX7Microtuning } from 'core/models/DX7Microtuning'
 import CartViewerDX7Voice from './CartViewerDX7Voice'
 import CartViewerDX7Performance from './CartViewerDX7Performance'
+import CartViewerDX7Microtuning from './CartViewerDX7Microtuning'
 import CartViewerUnknown from './CartViewerUnknown'
 import CartViewerHelp from './CartViewerHelp'
 
 interface State {
   voiceCart?: DX7VoiceCart
   perfCart?: DX7PerfCart
+  mctCart?: DX7Microtuning
 }
 
 /**
@@ -23,12 +26,15 @@ export default class CartViewer extends React.PureComponent<CartViewerProps, Sta
 
     let voiceCart = DX7VoiceCart.createFromSyx(props.file.buf)
     let perfCart: DX7PerfCart | undefined
+    let mctCart: DX7Microtuning | undefined
 
     if (!voiceCart) perfCart = DX7PerfCart.createFromSyx(props.file.buf)
+    if (!perfCart) mctCart = DX7Microtuning.createFromSyx(props.file.buf)
 
     this.state = {
       voiceCart,
       perfCart,
+      mctCart,
     }
   }
 
@@ -37,6 +43,8 @@ export default class CartViewer extends React.PureComponent<CartViewerProps, Sta
       return <CartViewerDX7Voice {...this.props} cart={this.state.voiceCart} />
     } else if (this.state.perfCart) {
       return <CartViewerDX7Performance {...this.props} cart={this.state.perfCart} />
+    }  else if (this.state.mctCart) {
+      return <CartViewerDX7Microtuning {...this.props} cart={this.state.mctCart} />
     } else if (this.props.file.id == 'help') {
       return <CartViewerHelp {...this.props} />
     } else {

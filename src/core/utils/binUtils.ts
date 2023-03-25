@@ -48,3 +48,11 @@ export function calcChecksum(bytes: Uint8Array, offset: number = 0, endOffset?: 
 
   return (0x80 - sum % 0x80) % 0x80
 }
+
+export function cut(buf: Uint8Array, start: number, length: number): Uint8Array {
+  return buf.slice(start, start + length)
+}
+
+export function dataMatches(needle: Uint8Array, haystack: Uint8Array, haystackOffset: number = 0): boolean {
+  return uint8ArraysEqual(cut(haystack, haystackOffset, needle.length), needle)
+}
