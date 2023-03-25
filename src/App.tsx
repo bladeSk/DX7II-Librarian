@@ -97,6 +97,7 @@ export default class App extends React.PureComponent<Props, State> {
                 return <CartViewer
                   key={sysExFile.id}
                   file={sysExFile}
+                  currentSelection={this.state.openEditor?.data}
                   onClose={this.handleFileWindowClose}
                   onFocus={this.handleFileWindowFocus}
                   onPosChanged={this.handlePosChanged}

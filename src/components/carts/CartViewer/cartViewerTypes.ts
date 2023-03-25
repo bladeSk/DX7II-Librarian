@@ -1,6 +1,7 @@
 export interface CartViewerProps {
   className?: string
   file: FileWithMeta
+  currentSelection?: any
   onSave?: (oldFile: FileWithMeta, newFile: FileWithMeta) => void
   onClose: (file: FileWithMeta) => void
   onFocus?: (file: FileWithMeta) => void

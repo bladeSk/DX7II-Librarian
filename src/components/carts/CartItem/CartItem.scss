@@ -22,6 +22,10 @@
   }
 }
 
+.CartItem_selected {
+  font-weight: bold;
+}
+
 .CartItem__dragHint {
   flex-shrink: 0;
   margin-right: 0;

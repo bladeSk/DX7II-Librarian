@@ -88,6 +88,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
           dataType="DX7Voice"
           data={voice}
           dragNDropCtx={dragNDropCtx}
+          selected={voice == this.props.currentSelection}
           onDrop={this.handleVoiceDrop}
           onEdit={(voice) => this.props.onOpenEditor?.('DX7Voice', voice, this.handleVoiceUpdateFromEditor)}
         />)

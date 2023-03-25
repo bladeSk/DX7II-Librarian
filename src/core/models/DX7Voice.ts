@@ -96,7 +96,7 @@ export class DX7Voice {
     let fccs1 = (am[34] & 0b0001000) >> 3
 
     return [
-      fks && 'Fract. scaling',
+      fks && 'Fractional key scaling',
       ams && 'AM sens. 4-7',
       rndp && 'Random pitch',
       vpsw && 'Pitch EG vel. sens.',

@@ -82,6 +82,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
           dataType="DX7Perf"
           data={perf}
           dragNDropCtx={dragNDropCtx}
+          selected={perf == this.props.currentSelection}
           onDrop={this.handlePerfDrop}
           onEdit={(perf) => this.props.onOpenEditor?.('DX7Perf', perf, this.handlePerfUpdateFromEditor)}
         />)

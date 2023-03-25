@@ -14,6 +14,7 @@ export interface Props<T = any> {
   dataType: string
   data: T
   dragNDropCtx: DragNDropData
+  selected?: boolean
   onDrop: (dropData: T, index: number, where: 'before' | 'on') => void
   onEdit: (data: T) => void
 }
@@ -51,12 +52,13 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
   }
 
   render(): React.ReactElement {
-    let { dataType, data, dragNDropCtx, onDrop, index } = this.props
+    let { dataType, data, dragNDropCtx, onDrop, index, selected } = this.props
     let { draggingOverBefore, draggingOverItem, isDragged } = this.state
 
     let classNames = clsx(
       'CartItem',
       isDragged && 'CartItem_dragged',
+      selected && 'CartItem_selected',
       this.props.className
     )
 
