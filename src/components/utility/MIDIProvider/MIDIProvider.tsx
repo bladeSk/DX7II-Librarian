@@ -50,7 +50,14 @@ export default class MIDIProvider extends React.Component<Props, State> {
       })
 
       midi.addEventListener('statechange', this.onMidiStateChanged)
-    }).catch(handleError)
+    }).catch((err) => {
+      if (err?.message?.match('break through the security policy')) {
+        handleError(new Error('Your browser has blocked access to MIDI devices.\nPlease reset the permissions by clicking on the padlock in the address bar and going to Site Settings.'))
+        return
+      }
+
+      handleError(err)
+    })
   }
 
   componentWillUnmount(): void {

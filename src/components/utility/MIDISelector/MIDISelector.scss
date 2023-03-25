@@ -1,6 +1,8 @@
 @import 'theme/vars';
 
 .MIDISelector {
+  display: flex;
+  align-items: center;
   color: $textColorD1;
 
   label {
@@ -8,4 +10,23 @@
     min-width: 90px;
     margin-right: 8px;
   }
+}
+
+.MIDISelector__icon {
+  margin-right: 8px;
+  height: 32px;
+  vertical-align: top;
+  cursor: help;
+}
+
+.MIDISelector__icon_active {
+  fill: $accentColor1;
+}
+
+.MIDISelector__icon_error {
+  fill: $accentColor3;
+}
+
+.MIDISelector__device + .MIDISelector__device {
+  margin-top: 4px;
 }
