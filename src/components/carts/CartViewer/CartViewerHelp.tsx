@@ -1,22 +1,24 @@
 import React from 'react'
-import { CartViewerProps } from './cartViewerTypes'
+import CartViewerBase, { CartViewerProps, CartViewerState } from './CartViewerBase'
 import DraggableWindow from '../DraggableWindow/DraggableWindow'
 import CollapsibleSection from 'components/basic/CollapsibleSection/CollapsibleSection'
 import './CartViewer.scss'
 
-interface State {
+interface State extends CartViewerState<null> {
   expandedSection?: string
 }
 
-
 /**
- * Renders a DraggableWindow representing an unknown SysEx.
+ * Renders a special DraggableWindow with help.
  */
-export default class CartViewerHelp extends React.PureComponent<CartViewerProps, State> {
-  constructor(props: CartViewerProps) {
+export default class CartViewerHelp extends CartViewerBase<null, State> {
+  constructor(props: CartViewerProps<null>) {
     super(props)
 
     this.state = {
+      editedCart: null,
+      editedName: this.props.file.fileName,
+      changed: false,
       expandedSection: 'about',
     }
   }
@@ -42,7 +44,7 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
       >
         <p><i>DX7II Librarian</i> allows you to manage Yamaha DX7II/DX7 <span className="accent1">voices</span> and <span className="accent2">performances</span> right from your browser.</p>
         <p>Try clicking or dragging some items.</p>
-        <p><i>DX7II Librarian</i> was written by <a href="https://blade.sk/" target="_blank">blade.sk</a>.</p>
+        <p><i>DX7II Librarian</i> was created by <a href="https://blade.sk/" target="_blank">blade.sk</a>.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Features"
@@ -70,7 +72,7 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
           (see <a href="" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting voices from a DX7</a>).
         </p>
 
-        <p>You can also import performance cartridges in the same way.</p>
+        <p>You can also import performance cartridges and microtunings in the same way.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Sending voices to a DX7"
@@ -134,18 +136,6 @@ export default class CartViewerHelp extends React.PureComponent<CartViewerProps,
         </ul>
       </CollapsibleSection>
     </DraggableWindow>
-  }
-
-  private handleClose = () => {
-    this.props.onClose(this.props.file)
-  }
-
-  private handleMove = (xPos: number, yPos: number) => {
-    this.props.onPosChanged?.(this.props.file, xPos, yPos)
-  }
-
-  private handleFocus = () => {
-    this.props.onFocus?.(this.props.file)
   }
 
   private handleSectionLinkClick(sectionId: string, e: React.MouseEvent) {

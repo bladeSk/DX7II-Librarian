@@ -1,5 +1,5 @@
 import React from 'react'
-import { CartViewerProps } from './cartViewerTypes'
+import { CartViewerProps } from './CartViewerBase'
 import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
 import { DX7PerfCart } from 'core/models/DX7PerfCart'
 import { DX7Microtuning } from 'core/models/DX7Microtuning'
@@ -20,8 +20,8 @@ interface State {
  * Assumes the contents of the file in props never change, as that would discard the edited changes.
  * It is therefore required to use file.id as a fixed key.
  */
-export default class CartViewer extends React.PureComponent<CartViewerProps, State> {
-  constructor(props: CartViewerProps) {
+export default class CartViewer extends React.PureComponent<CartViewerProps<any>, State> {
+  constructor(props: CartViewerProps<any>) {
     super(props)
 
     let voiceCart = DX7VoiceCart.createFromSyx(props.file.buf)

@@ -1,27 +1,33 @@
 import React from 'react'
-import { CartViewerProps, FileWithMeta } from './cartViewerTypes'
+import CartViewerBase, { CartViewerProps } from './CartViewerBase'
 import DraggableWindow, { WindowAction } from '../DraggableWindow/DraggableWindow'
-import { handleError } from 'core/utils/errorHandling'
-import { saveFileAs } from 'core/utils/fileUtils'
 import './CartViewer.scss'
 
-interface State {
-}
 
 const ACTIONS: WindowAction[] = [
+  { id: 'rename', label: 'Rename' },
+  { id: '---', label: '' },
   { id: 'exportFile', label: 'Export to file...'},
   { id: 'sendSysEx', label: 'Send via MIDI'},
 ]
 
+const ACTIONS_CHANGED: WindowAction[] = [
+  { id: 'save', label: 'Save' },
+  { id: 'revert', label: 'Undo all changes' },
+  ...ACTIONS,
+]
 
 /**
  * Renders a DraggableWindow representing an unknown SysEx.
  */
-export default class CartViewerUnknown extends React.PureComponent<CartViewerProps, State> {
-  constructor(props: CartViewerProps) {
+export default class CartViewerUnknown extends CartViewerBase<null> {
+  constructor(props: CartViewerProps<null>) {
     super(props)
 
     this.state = {
+      editedCart: null,
+      editedName: this.props.file.fileName,
+      changed: false,
     }
   }
 
@@ -36,7 +42,10 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
-      actions={isSysEx ? ACTIONS : undefined}
+      actions={isSysEx
+        ? (this.state.changed ? ACTIONS_CHANGED : ACTIONS)
+        : undefined
+      }
       onClose={this.handleClose}
       onMove={this.handleMove}
       onFocus={this.handleFocus}
@@ -50,6 +59,7 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
             <li>DX7II voices/patches: 21404 B</li>
             <li>DX7 voices/patches: 4104 B</li>
             <li>DX7II performances: 1650 B</li>
+            <li>DX7II microtuning data: 274 B</li>
           </ul>
         </>
         : <p>This file does not contain SysEx data.</p>
@@ -57,42 +67,22 @@ export default class CartViewerUnknown extends React.PureComponent<CartViewerPro
     </DraggableWindow>
   }
 
-  private handleClose = () => {
-    this.props.onClose(this.props.file)
-  }
-
-  private handleMove = (xPos: number, yPos: number) => {
-    this.props.onPosChanged?.(this.props.file, xPos, yPos)
-  }
-
-  private handleFocus = () => {
-    this.props.onFocus?.(this.props.file)
-  }
-
   private handleAction = (actionId: string) => {
     if (actionId == 'exportFile') {
-      let data = this.props.file.buf
-
-      saveFileAs(data, this.props.file.fileName)
-        .then((newFileName) => {
-          if (!newFileName) return // aborted
-
-          let newFile: FileWithMeta = {
-            ...this.props.file,
-            buf: data,
-            fileName: newFileName,
-            id: `${+new Date()}_0`,
-          }
-
-          this.props.onSave?.(this.props.file, newFile)
-        })
-        .catch(handleError)
+      this.doActionExport(this.props.file.buf)
+    } else if (actionId == 'revert') {
+      this.setState({
+        editedName: this.props.file.fileName,
+        changed: false,
+      })
     } else if (actionId == 'sendSysEx') {
-      try {
-        this.props.onSendSysEx?.(this.props.file.buf)
-      } catch (err) {
-        handleError(err)
-      }
+      if (!confirm(`This will send this unknown SysEx data to your synth. Continue?`)) return
+
+      this.doActionSendSysEx(this.props.file.buf)
+    } else if (actionId == 'rename') {
+      this.doActionRename()
+    } else if (actionId == 'save') {
+      this.doActionSave(this.props.file.buf)
     }
   }
 }

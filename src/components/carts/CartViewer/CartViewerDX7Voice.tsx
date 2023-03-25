@@ -1,24 +1,12 @@
 import React from 'react'
 import clsx from 'clsx'
-import { CartViewerProps, FileWithMeta } from './cartViewerTypes'
+import CartViewerBase, { CartViewerProps } from './CartViewerBase'
 import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
 import DraggableWindow, { WindowAction } from '../DraggableWindow/DraggableWindow'
 import { DragNDropContext } from 'components/utility/DragNDropProvider/DragNDropProvider'
-import { handleError } from 'core/utils/errorHandling'
 import { DX7Voice } from 'core/models/DX7Voice'
-import { saveFileAs } from 'core/utils/fileUtils'
 import CartItem from '../CartItem/CartItem'
 import './CartViewer.scss'
-
-export interface Props extends CartViewerProps {
-  cart: DX7VoiceCart
-}
-
-interface State {
-  editedCart: DX7VoiceCart
-  editedName: string
-  changed: boolean
-}
 
 const ACTIONS: WindowAction[] = [
   { id: 'rename', label: 'Rename' },
@@ -35,12 +23,11 @@ const ACTIONS_CHANGED: WindowAction[] = [
   ...ACTIONS,
 ]
 
-
 /**
- * Renders an editable DX7 voice cart.
+ * Renders a window with an editable DX7 voice cart.
  */
-export default class CartViewerDX7Voice extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+export default class CartViewerDX7Voice extends CartViewerBase<DX7VoiceCart> {
+  constructor(props: CartViewerProps<DX7VoiceCart>) {
     super(props)
 
     this.state = {
@@ -61,10 +48,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
 
     return <DraggableWindow
       className={classNames}
-      title={<>
-        {this.state.changed && <span className="CartViewer__changed" title="Unsaved changes">●</span>}
-        {this.state.editedName.replace(/\.syx$/i, '')}
-      </>}
+      title={this.getTitle()}
       titleExtra={<div className="CartViewer__bankToggle"
         onMouseDown={this.handleBankToggleClick}
         title="Click to toggle DX7II bank"
@@ -96,24 +80,6 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     </DraggableWindow>
   }
 
-  private handleClose = () => {
-    if (this.state.changed) {
-      if (!confirm('Close cartridge and discard all changes?')) return
-    } else if (this.props.file.origin == 'midi' || this.props.file.origin == 'user') {
-      if (!confirm('Close cartridge?')) return
-    }
-
-    this.props.onClose(this.props.file)
-  }
-
-  private handleMove = (xPos: number, yPos: number) => {
-    this.props.onPosChanged?.(this.props.file, xPos, yPos)
-  }
-
-  private handleFocus = () => {
-    this.props.onFocus?.(this.props.file)
-  }
-
   private handleAction = (actionId: string) => {
     let cart = this.state.editedCart
     if (!cart) return
@@ -121,31 +87,7 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     if (actionId == 'exportFileI' || actionId == 'exportFileII') {
       let data = actionId == 'exportFileI' ? cart.buildCartDX7() : cart.buildCartDX7II()
 
-      saveFileAs(data, this.state.editedName)
-        .then((newFileName) => {
-          if (!newFileName) return // aborted
-
-          if (!this.state.changed) { // change the cart origin to "file" - the user has the exact copy on disk
-            this.props.onSave?.(this.props.file, {
-              ...this.props.file,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            })
-          }
-
-          if (confirm('Replace cart with exported file?')) {
-            let newFile: FileWithMeta = {
-              ...this.props.file,
-              buf: data,
-              fileName: newFileName,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            }
-
-            this.props.onSave?.(this.props.file, newFile)
-          }
-        })
-        .catch(handleError)
+      this.doActionExport(data)
     } else if (actionId == 'revert') {
       this.setState({
         editedCart: this.props.cart.clone(),
@@ -155,33 +97,15 @@ export default class CartViewerDX7Voice extends React.PureComponent<Props, State
     } else if (actionId == 'sendSysExI') {
       if (!confirm('This will overwrite all the voices in your DX7 memory.\nSend SysEx data?')) return
 
-      try {
-        this.props.onSendSysEx?.(cart.buildCartDX7())
-      } catch (err) {
-        handleError(err)
-      }
+      this.doActionSendSysEx(cart.buildCartDX7())
     } else if (actionId == 'sendSysExII') {
       if (!confirm(`This will overwrite voices in the ${cart.bank == 0 ? '1-32' : '33-64'} block of your DX7II memory.\nSend SysEx data?`)) return
 
-      try {
-        this.props.onSendSysEx?.(cart.buildCartDX7II())
-      } catch (err) {
-        handleError(err)
-      }
+      this.doActionSendSysEx(cart.buildCartDX7II())
     } else if (actionId == 'rename') {
-      let name = prompt('Rename to', this.props.file.fileName.replace(/\.syx$/i, ''))
-
-      if (!name) return
-
-      this.setState({ editedName: name, changed: true })
+      this.doActionRename()
     } else if (actionId == 'save') {
-      this.props.onSave?.(this.props.file, {
-        ...this.props.file,
-        fileName: this.state.editedName,
-        buf: cart.buildCartDX7II(),
-        origin: 'user',
-        id: `${+new Date()}_0`,
-      })
+      this.doActionSave(cart.buildCartDX7II())
     }
   }
 

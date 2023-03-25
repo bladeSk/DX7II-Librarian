@@ -1,24 +1,13 @@
 import React from 'react'
 import clsx from 'clsx'
-import { CartViewerProps, FileWithMeta } from './cartViewerTypes'
+import CartViewerBase, { CartViewerProps } from './CartViewerBase'
 import DraggableWindow, { WindowAction } from '../DraggableWindow/DraggableWindow'
 import { DragNDropContext } from 'components/utility/DragNDropProvider/DragNDropProvider'
 import { DX7PerfCart } from 'core/models/DX7PerfCart'
-import { handleError } from 'core/utils/errorHandling'
-import { saveFileAs } from 'core/utils/fileUtils'
 import CartItem from '../CartItem/CartItem'
 import { DX7Performance } from 'core/models/DX7Performance'
 import './CartViewer.scss'
 
-export interface Props extends CartViewerProps {
-  cart: DX7PerfCart
-}
-
-interface State {
-  editedCart: DX7PerfCart
-  editedName: string
-  changed: boolean
-}
 
 const ACTIONS: WindowAction[] = [
   { id: 'rename', label: 'Rename' },
@@ -33,12 +22,11 @@ const ACTIONS_CHANGED: WindowAction[] = [
   ...ACTIONS,
 ]
 
-
 /**
- * Renders an editable DX7II performance cart.
+ * Renders a window with an editable DX7II performance cart.
  */
-export default class CartViewerDX7Performance extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+export default class CartViewerDX7Performance extends CartViewerBase<DX7PerfCart> {
+  constructor(props: CartViewerProps<DX7PerfCart>) {
     super(props)
 
     this.state = {
@@ -60,10 +48,7 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     return <DraggableWindow
       className={classNames}
       variant="2"
-      title={<>
-        {this.state.changed && <span className="CartViewer__changed" title="Unsaved changes">●</span>}
-        {this.state.editedName.replace(/\.syx$/i, '')}
-      </>}
+      title={this.getTitle()}
       xPos={file.xPos}
       yPos={file.yPos}
       zIndex={file.zIndex}
@@ -90,56 +75,12 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     </DraggableWindow>
   }
 
-  private handleClose = () => {
-    if (this.state.changed) {
-      if (!confirm('Close cartridge and discard all changes?')) return
-    } else if (this.props.file.origin == 'midi' || this.props.file.origin == 'user') {
-      if (!confirm('Close cartridge?')) return
-    }
-
-    this.props.onClose(this.props.file)
-  }
-
-  private handleMove = (xPos: number, yPos: number) => {
-    this.props.onPosChanged?.(this.props.file, xPos, yPos)
-  }
-
-  private handleFocus = () => {
-    this.props.onFocus?.(this.props.file)
-  }
-
   private handleAction = (actionId: string) => {
     let cart = this.state.editedCart
     if (!cart) return
 
     if (actionId == 'exportFile') {
-      let data = cart.buildCart()
-
-      saveFileAs(data, this.state.editedName)
-        .then((newFileName) => {
-          if (!newFileName) return // aborted
-
-          if (!this.state.changed) { // change the cart origin to "file" - the user has the exact copy on disk
-            this.props.onSave?.(this.props.file, {
-              ...this.props.file,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            })
-          }
-
-          if (confirm('Replace cart with exported file?')) {
-            let newFile: FileWithMeta = {
-              ...this.props.file,
-              buf: data,
-              fileName: newFileName,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            }
-
-            this.props.onSave?.(this.props.file, newFile)
-          }
-        })
-        .catch(handleError)
+      this.doActionExport(cart.buildCart())
     } else if (actionId == 'revert') {
       this.setState({
         editedCart: this.props.cart.clone(),
@@ -149,25 +90,11 @@ export default class CartViewerDX7Performance extends React.PureComponent<Props,
     } else if (actionId == 'sendSysEx') {
       if (!confirm('This will overwrite all the performances in your DX7II memory.\nSend SysEx data?')) return
 
-      try {
-        this.props.onSendSysEx?.(cart.buildCart())
-      } catch (err) {
-        handleError(err)
-      }
+      this.doActionSendSysEx(cart.buildCart())
     } else if (actionId == 'rename') {
-      let name = prompt('Rename to', this.props.file.fileName.replace(/\.syx$/i, ''))
-
-      if (!name) return
-
-      this.setState({ editedName: name, changed: true })
+      this.doActionRename()
     } else if (actionId == 'save') {
-      this.props.onSave?.(this.props.file, {
-        ...this.props.file,
-        fileName: this.state.editedName,
-        buf: cart.buildCart(),
-        origin: 'user',
-        id: `${+new Date()}_0`,
-      })
+      this.doActionSave(cart.buildCart())
     }
   }
 

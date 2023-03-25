@@ -1,21 +1,8 @@
 import React from 'react'
-import { CartViewerProps, FileWithMeta } from './cartViewerTypes'
 import DraggableWindow, { WindowAction } from '../DraggableWindow/DraggableWindow'
-import { handleError } from 'core/utils/errorHandling'
-import { saveFileAs } from 'core/utils/fileUtils'
 import { DX7Microtuning } from 'core/models/DX7Microtuning'
+import CartViewerBase, { CartViewerProps } from './CartViewerBase'
 import './CartViewer.scss'
-
-export interface Props extends CartViewerProps {
-  cart: DX7Microtuning
-}
-
-
-interface State {
-  editedCart: DX7Microtuning
-  editedName: string
-  changed: boolean
-}
 
 const ACTIONS: WindowAction[] = [
   { id: 'rename', label: 'Rename' },
@@ -32,10 +19,10 @@ const ACTIONS_CHANGED: WindowAction[] = [
 
 
 /**
- * Renders a DraggableWindow representing an unknown SysEx.
+ * Renders a window for DX7II microtuning.
  */
-export default class CartViewerDX7Microtuning extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
+export default class CartViewerDX7Microtuning extends CartViewerBase<DX7Microtuning> {
+  constructor(props: CartViewerProps<DX7Microtuning>) {
     super(props)
 
     this.state = {
@@ -52,12 +39,9 @@ export default class CartViewerDX7Microtuning extends React.PureComponent<Props,
     return <DraggableWindow
       className="CartViewer CartViewerMicrotuning"
       variant='4'
-      title={<>
-        {this.state.changed && <span className="CartViewer__changed" title="Unsaved changes">●</span>}
-        {this.state.editedName.replace(/\.syx$/i, '')}
-      </>}
+      title={this.getTitle()}
       titleExtra={<div className="CartViewer__bankToggle"
-        onMouseDown={this.handleBankToggleClick}
+        onMouseDown={this.handleSlotToggleClick}
         title="Click to toggle slot"
       >{mct.slot == 0 ? <>Slot<br/>1</> : <>Slot<br/>2</>}</div>}
       xPos={file.xPos}
@@ -73,7 +57,7 @@ export default class CartViewerDX7Microtuning extends React.PureComponent<Props,
     </DraggableWindow>
   }
 
-  private handleBankToggleClick = (e: React.MouseEvent) => {
+  private handleSlotToggleClick = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -85,50 +69,12 @@ export default class CartViewerDX7Microtuning extends React.PureComponent<Props,
     })
   }
 
-  private handleClose = () => {
-    this.props.onClose(this.props.file)
-  }
-
-  private handleMove = (xPos: number, yPos: number) => {
-    this.props.onPosChanged?.(this.props.file, xPos, yPos)
-  }
-
-  private handleFocus = () => {
-    this.props.onFocus?.(this.props.file)
-  }
-
   private handleAction = (actionId: string) => {
     let mct = this.state.editedCart
     if (!mct) return
 
     if (actionId == 'exportFile') {
-      let data = mct.buildSysex()
-
-      saveFileAs(data, this.props.file.fileName)
-        .then((newFileName) => {
-          if (!newFileName) return // aborted
-
-          if (!this.state.changed) { // change the cart origin to "file" - the user has the exact copy on disk
-            this.props.onSave?.(this.props.file, {
-              ...this.props.file,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            })
-          }
-
-          if (confirm('Replace cart with exported file?')) {
-            let newFile: FileWithMeta = {
-              ...this.props.file,
-              buf: data,
-              fileName: newFileName,
-              origin: 'file',
-              id: `${+new Date()}_0`,
-            }
-
-            this.props.onSave?.(this.props.file, newFile)
-          }
-        })
-        .catch(handleError)
+      this.doActionExport(mct.buildSysex())
     } else if (actionId == 'revert') {
       this.setState({
         editedCart: this.props.cart.clone(),
@@ -136,25 +82,13 @@ export default class CartViewerDX7Microtuning extends React.PureComponent<Props,
         changed: false,
       })
     } else if (actionId == 'sendSysEx') {
-      try {
-        this.props.onSendSysEx?.(this.props.file.buf)
-      } catch (err) {
-        handleError(err)
-      }
+      if (!confirm(`This will overwrite user microtuning slot ${mct.slot + 1} in your DX7II memory.\nSend SysEx data?`)) return
+
+      this.doActionSendSysEx(mct.buildSysex())
     } else if (actionId == 'rename') {
-      let name = prompt('Rename to', this.props.file.fileName.replace(/\.syx$/i, ''))
-
-      if (!name) return
-
-      this.setState({ editedName: name, changed: true })
+      this.doActionRename()
     } else if (actionId == 'save') {
-      this.props.onSave?.(this.props.file, {
-        ...this.props.file,
-        fileName: this.state.editedName,
-        buf: mct.buildSysex(),
-        origin: 'user',
-        id: `${+new Date()}_0`,
-      })
+      this.doActionSave(mct.buildSysex())
     }
   }
 }
