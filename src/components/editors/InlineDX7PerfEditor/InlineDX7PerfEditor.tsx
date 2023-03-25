@@ -155,7 +155,7 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
         </div>
 
         <div className="InlineEditor__actions">
-          {this.state.changed && <button type="button" onClick={this.handleSaveClick}>✔</button>}
+          {this.state.changed && <button type="submit" onClick={this.handleSaveClick}>✔</button>}
 
           <button type="button" className="button_acc4" onClick={this.handleCancelClick}>✖</button>
         </div>
@@ -210,8 +210,6 @@ export default class InlineDX7PerfEditor extends React.PureComponent<Props, Stat
   private handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     e.stopPropagation()
-
-    this.handleSaveClick()
   }
 }
 
