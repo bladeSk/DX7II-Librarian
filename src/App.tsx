@@ -70,7 +70,7 @@ export default class App extends React.PureComponent<Props, State> {
                   <QuestionSvg onClick={this.handleHelpClick} />
                 </span>
 
-                <a href="https://github.com/bladeSk/dx7ii-librarian" title="Project Github" target="_blank" draggable={false}>
+                <a href="https://github.com/bladeSk/DX7II-Librarian" title="Project Github" target="_blank" draggable={false}>
                   <GithubSvg />
                 </a>
               </div>
@@ -219,38 +219,17 @@ export default class App extends React.PureComponent<Props, State> {
   private async openInitialProject() {
     this.setState({ sysExFiles: [] })
 
-    let uris = [
-      '/carts/Demo Cart.syx',
-      '/carts/DX7II factory A 1-32.syx',
-      '/carts/DX7II factory A 33-64.syx',
-      '/carts/DX7II factory A perf.syx',
-    ]
+    await this.openRemoteFiles(['/carts/Librarian Demo Cart.syx'], { x: 20, y: 20 })
 
-    let positions = [
-      { x: 30, y: 30 },
-      { x: 480, y: 30 },
-      { x: 870, y: 30 },
-      { x: 1260, y: 30 },
-    ]
+    await this.openFiles([{
+      name: 'Empty Voice Cart',
+      buf: DX7VoiceCart.createEmpty().buildCartDX7II(),
+      origin: 'user',
+      x: 540,
+      y: 20,
+    }])
 
-    try {
-      let bufs = await Promise.all(uris.map(uri => fetch(uri).then((resp) => {
-        if (!resp.ok) throw new Error('Couldn\'t open demo file')
-        return resp.arrayBuffer()
-      })))
-
-      await this.openFiles(bufs.map((buf, i) => ({
-        buf: new Uint8Array(buf),
-        name: uris[i].match(/[^\/]*$/)?.[0] || '',
-        origin: 'file',
-        ...positions[i],
-      })))
-    } catch(err) {
-      handleError(err)
-    } finally {
-      if (this.state.sysExFiles.find(f => f.id == 'help')) return
-      this.handleHelpClick()
-    }
+    this.handleHelpClick()
   }
 
   private handleMenuAction = (actionId: string) => {
@@ -267,18 +246,18 @@ export default class App extends React.PureComponent<Props, State> {
         origin: 'user',
       }])
     } else if (actionId == 'importDemo') {
-      this.openRemoteFiles(['/carts/Demo Cart.syx'])
+      this.openRemoteFiles(['/carts/Librarian Demo Cart.syx'])
     } else if (actionId == 'importDX7IIA') {
       this.openRemoteFiles([
-        '/carts/DX7II factory A perf.syx',
-        '/carts/DX7II factory A 1-32.syx',
-        '/carts/DX7II factory A 33-64.syx',
+        '/carts/DX7II factory bank 1 perf.syx',
+        '/carts/DX7II factory bank 1 33-64.syx',
+        '/carts/DX7II factory bank 1 1-32.syx',
       ])
     } else if (actionId == 'importDX7IIB') {
       this.openRemoteFiles([
-        '/carts/DX7II factory B perf.syx',
-        '/carts/DX7II factory B 1-32.syx',
-        '/carts/DX7II factory B 33-64.syx',
+        '/carts/DX7II factory bank 2 perf.syx',
+        '/carts/DX7II factory bank 2 33-64.syx',
+        '/carts/DX7II factory bank 2 1-32.syx',
       ])
     } else if (actionId == 'importDX7') {
       this.openRemoteFiles([
@@ -403,11 +382,12 @@ export default class App extends React.PureComponent<Props, State> {
 const MENU_ACTIONS: MenuButtonAction[] = [
   { id: 'newVoiceCart', label: 'New voice cart' },
   { id: 'newPerfCart', label: 'New performance cart' },
+  // TODO: { id: 'openSyx', label: 'Open .syx file' },
   { id: '---', label: '' },
-  { id: 'importDemo', label: 'Import demo voice cart' },
-  { id: 'importDX7IIA', label: 'Import DX7II factory ROM A' },
-  { id: 'importDX7IIB', label: 'Import DX7II factory ROM B' },
-  { id: 'importDX7', label: 'Import DX7 ROM 1' },
+  { id: 'importDemo', label: 'Load demo voice cart' },
+  { id: 'importDX7IIA', label: 'Load DX7II factory presets 1' },
+  { id: 'importDX7IIB', label: 'Load DX7II factory presets 2' },
+  { id: 'importDX7', label: 'Load DX7 ROM 1' },
   { id: '---', label: '' },
   { id: 'openHelp', label: 'Help' },
 ]
