@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build
-        run: yarn build
+        run: yarn build --base=/DX7II-Librarian
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
