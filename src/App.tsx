@@ -140,7 +140,7 @@ export default class App extends React.PureComponent<Props, State> {
                   buf: new Uint8Array(buf),
                   origin: 'file',
                 })), { x: dragEvt.clientX, y: dragEvt.clientY - offsetY })
-              })
+              }).catch(handleError)
             }}
           >Drop .syx files here to import DX7II/DX7 cartridges</FileDrop>
 
