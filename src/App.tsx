@@ -90,7 +90,9 @@ export default class App extends React.PureComponent<Props, State> {
           </header>
 
           <main className={clsx('App__body', isEmpty && 'App__body_empty')}>
-            {isEmpty && <p>Drop a .syx file here or send SysEx from a DX7 via MIDI.</p>}
+            <div className="App__dragNDropHint">
+              Drop .syx files here or receive DX7 SysEx via MIDI.
+            </div>
 
             <MIDIContext.Consumer>{(midiCtx) => <>
               {this.state.sysExFiles.map((sysExFile) => {
