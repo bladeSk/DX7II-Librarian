@@ -1,4 +1,4 @@
-import { calcChecksum, hex2bin, mergeUint8Arrays, uint8ArraysEqual } from 'core/utils/binUtils'
+import { calcChecksum, cut, dataMatches, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
 import { DX7Voice } from './DX7Voice'
 
 /**
@@ -170,14 +170,6 @@ export class DX7VoiceCart {
 
     return true
   }
-}
-
-function cut(buf: Uint8Array, start: number, length: number): Uint8Array {
-  return buf.slice(start, start + length)
-}
-
-function dataMatches(needle: Uint8Array, haystack: Uint8Array, haystackOffset: number): boolean {
-  return uint8ArraysEqual(cut(haystack, haystackOffset, needle.length), needle)
 }
 
 const DX7II_HEADER_1 = hex2bin('F0 43 10 19 4D 00 F7')

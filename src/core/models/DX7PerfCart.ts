@@ -1,4 +1,4 @@
-import { calcChecksum, hex2bin, mergeUint8Arrays as mergeUint8Arrays, uint8ArraysEqual } from 'core/utils/binUtils'
+import { calcChecksum, cut, dataMatches, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
 import { DX7Performance } from './DX7Performance'
 
 /**
@@ -81,14 +81,6 @@ export class DX7PerfCart {
     perfData[perfData.length - 2] = calcChecksum(perfData, 6, -2)
     return perfData
   }
-}
-
-function cut(buf: Uint8Array, start: number, length: number): Uint8Array {
-  return buf.slice(start, start + length)
-}
-
-function dataMatches(needle: Uint8Array, haystack: Uint8Array, haystackOffset: number): boolean {
-  return uint8ArraysEqual(cut(haystack, haystackOffset, needle.length), needle)
 }
 
 const PERF_HEADER = hex2bin('F0 43 00 7E 0C 6A 4C 4D 20 20 38 39 37 33 50 4D')
