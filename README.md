@@ -1,6 +1,8 @@
 # DX7II Librarian
 
-Yamaha DX7II-FD / DX7II-D / DX7s / DX7 cart manager in your browser. With DX7II features support.
+![screenshot - drag & drop](public/screenshot.png)
+
+Cartridge manager for the Yamaha DX7II-FD / DX7II-D / DX7s / DX7 line of synths. Running in your web browser. With DX7II features support.
 
 ## Live app
 
