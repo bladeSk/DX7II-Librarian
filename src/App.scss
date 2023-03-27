@@ -31,7 +31,7 @@
   justify-content: space-between;
   align-items: center;
   background: $bgColorL1;
-  padding: 16px;
+  padding: 4px 20px;
   height: 60px;
 }
 
@@ -48,12 +48,12 @@
     font-size: 30px;
     font-weight: normal;
     line-height: 1;
-    margin: 0;
+    margin: 4px 0 0 0;
   }
 
   svg {
     vertical-align: top;
-    height: 32px;
+    height: 28px;
   }
 
   a {
@@ -66,8 +66,9 @@
   }
 
   img {
-    height: 30px;
-    margin: 4px 16px 0 0;
+    height: 24px;
+    margin: 0 16px 0 0;
+    vertical-align: -5%;
   }
 }
 
@@ -82,13 +83,13 @@
 }
 
 .App__subTitle {
-  font-size: 13px;
+  font-size: 12px;
   color: $textColorD1;
   margin-top: 4px;
 }
 
 .App__mainMenuButton {
-  margin-left: 16px;
+  margin: 0 -4px 0 16px;
 }
 
 .App .file-drop-target {
