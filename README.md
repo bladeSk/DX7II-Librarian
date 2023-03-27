@@ -1,12 +1,12 @@
-# DX7II Librarian
-
 ![screenshot - drag & drop](public/screenshot.png)
+
+# DX7II Librarian
 
 Cartridge manager for the Yamaha DX7II-FD / DX7II-D / DX7s / DX7 line of synths. Running in your web browser. With DX7II features support.
 
 ## Live app
 
-https://bladesk.github.io/bladeSk/DX7II-Librarian/
+https://bladesk.github.io/DX7II-Librarian/
 
 ## Developing & building
 
