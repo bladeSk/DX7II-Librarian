@@ -64,6 +64,7 @@ export default class CartViewerDX7Performance extends CartViewerBase<DX7PerfCart
           index={i}
           number={i + 1}
           name={perf.name}
+          isEmpty={perf.name == 'INIT PERF'}
           dataType="DX7Perf"
           data={perf}
           dragNDropCtx={dragNDropCtx}

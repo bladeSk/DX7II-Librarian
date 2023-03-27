@@ -9,6 +9,7 @@ export interface Props<T = any> {
   className?: string
   name: string
   isDX7II?: boolean
+  isEmpty?: boolean
   index: number
   number: number
   dataType: string
@@ -52,13 +53,14 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
   }
 
   render(): React.ReactElement {
-    let { dataType, data, dragNDropCtx, onDrop, index, selected } = this.props
+    let { dataType, data, dragNDropCtx, onDrop, index, selected, isEmpty } = this.props
     let { draggingOverBefore, draggingOverItem, isDragged } = this.state
 
     let classNames = clsx(
       'CartItem',
       isDragged && 'CartItem_dragged',
       selected && 'CartItem_selected',
+      isEmpty && 'CartItem_empty',
       this.props.className
     )
 

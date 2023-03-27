@@ -22,6 +22,10 @@
   }
 }
 
+.CartItem_empty {
+  color: rgba($textColor, 0.1);
+}
+
 .CartItem_selected {
   font-weight: bold;
   color: $textColor;
