@@ -96,7 +96,8 @@ export default class MIDIProvider extends React.Component<Props, State> {
     if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
 
     this.setState({ sendingData: true })
-    setTimeout(() => this.setState({ sendingData: false }), 2000)
+    // fake timeout - WebMIDI API doesn't have events to tell when the sending is finished
+    setTimeout(() => this.setState({ sendingData: false }), 4000)
 
     this.state.outputDevice.send(buf)
   }

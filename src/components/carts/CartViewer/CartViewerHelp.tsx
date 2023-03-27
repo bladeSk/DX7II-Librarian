@@ -42,8 +42,14 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
       <CollapsibleSection title="About DX7II Librarian"
         sectionId="about" expanded={exp == 'about'} onToggle={this.handleSectionToggle}
       >
-        <p><i>DX7II Librarian</i> allows you to manage Yamaha DX7II/DX7 <span className="accent1">voices</span> and <span className="accent2">performances</span> right from your browser.</p>
-        <p>Try clicking or dragging some items.</p>
+        <p><i>DX7II Librarian</i> allows you to manage Yamaha DX7II/DX7 <span className="accent1">voices</span> and <span className="accent2">performances</span> right from your browser. Including the enhanced DX7II voices.</p>
+        <p>Things to try:</p>
+        <ul>
+          <li>drag voices to reorder or replace them</li>
+          <li>click voices to rename them and show details</li>
+          <li>drop a DX7 .syx file anywhere into this window to load it (<a href="#" onClick={this.handleSectionLinkClick.bind(this, 'links')}>where to get .syx files</a>)</li>
+          <li>send your favorite collection of voices to a DX7 via MIDI</li>
+        </ul>
         <p><i>DX7II Librarian</i> was created by <a href="https://blade.sk/" target="_blank">blade.sk</a>.</p>
       </CollapsibleSection>
 
@@ -65,11 +71,11 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
         <p>
           Import voice cartridges by dropping a DX7 <i>.syx</i> file anywhere on this page. {}
           You can find a lot of these on the internet - {}
-          see <a href="" onClick={this.handleSectionLinkClick.bind(this, 'links')}>Useful links</a>.
+          see <a href="#" onClick={this.handleSectionLinkClick.bind(this, 'links')}>Useful links</a>.
         </p>
         <p>
           Voices can be received directly from a DX7 via MIDI {}
-          (see <a href="" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting voices from a DX7</a>).
+          (see <a href="#" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting voices from a DX7</a>).
         </p>
 
         <p>You can also import performance cartridges and microtunings in the same way.</p>
@@ -94,7 +100,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
           <li>press INTERNAL MEMORY PROTECT and set to OFF</li>
         </ul>
 
-        <p>Click <i>Send via MIDI</i> in a cartridge window's menu bar. The synth should display <i>Receiving MIDI data</i>.</p>
+        <p>Click a cartridge window's menu button and select <i>Send via MIDI</i>. The synth should display <i>Receiving MIDI data</i>.</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Exporting voices from a DX7"
@@ -120,11 +126,12 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
       <CollapsibleSection title="Useful links"
         sectionId="links" expanded={exp == 'links'} onToggle={this.handleSectionToggle}
       >
-        <p><a target="_blank" href="https://github.com/bladeSk/dx7ii-librarian">Github - report issues here</a></p>
-        <p><a target="_blank" href="/files/dx7ii-factory-rom.zip">Download factory DX7II voices and performances</a></p>
+        <p><a target="_blank" href="https://github.com/bladeSk/DX7II-Librarian">Project Github</a> - report issues here</p>
+        <p><a target="_blank" href="/files/DX7II-collection.zip">Download a collection of DX7II voices and performances</a></p>
+        <p><a target="_blank" href="/files/DX7II-factory-rom.zip">Download DX7II factory cartridge</a></p>
         <p><a target="_blank" href="https://yamahablackboxes.com/collection/yamaha-dx7-synthesizer/patches/">Original DX7 voice cartridges</a></p>
         <p><a target="_blank" href="https://www.thisdx7cartdoesnotexist.com/">Generate random DX7 cartridges</a></p>
-        <p><a target="_blank" href="https://asb2m10.github.io/dexed/">Dexed - DX7 mk.I virtual synth and voice editor</a></p>
+        <p><a target="_blank" href="https://asb2m10.github.io/dexed/">Dexed - DX7 virtual synth and voice editor</a> (DX7 mk.1 voices only)</p>
       </CollapsibleSection>
 
       <CollapsibleSection title="Planned features"
@@ -133,6 +140,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
         <ul>
           <li>Undo/redo steps</li>
           <li>Preview voices</li>
+          <li>(maybe) Editor for ALL the parameters</li>
         </ul>
       </CollapsibleSection>
     </DraggableWindow>
