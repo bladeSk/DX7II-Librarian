@@ -29,6 +29,7 @@ export class DX7Microtuning {
   clone(): DX7Microtuning {
     let cart = new DX7Microtuning()
     cart.mctData = this.mctData.slice(0)
+    cart.slot = this.slot
     return cart
   }
 
