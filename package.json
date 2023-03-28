@@ -9,9 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aws-sdk/util-base64": "^3.208.0",
+    "@aws-sdk/util-base64": "^3.295.0",
     "@types/file-saver": "^2.0.5",
-    "@types/react": "^18.0.27",
+    "@types/react": "^18.0.30",
     "@types/react-dom": "^18.0.10",
     "@types/webmidi": "^2.0.7",
     "@vitejs/plugin-react-swc": "^3.0.0",
@@ -20,11 +20,11 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-file-drop": "^3.1.6",
-    "sass": "^1.58.3",
-    "typescript": "^4.9.3",
-    "vite": "^4.1.0",
+    "sass": "^1.60.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1",
     "vite-plugin-svgr": "^2.4.0",
-    "vite-tsconfig-paths": "^4.0.5"
+    "vite-tsconfig-paths": "^4.0.7"
   },
   "devDependencies": {}
 }
