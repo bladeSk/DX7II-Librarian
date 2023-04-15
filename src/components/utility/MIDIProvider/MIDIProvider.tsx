@@ -20,7 +20,10 @@ export interface MIDIContextData {
   setInputDevice: (deviceId: string) => void
   setOutputDevice: (deviceId: string) => void
   sendData: (buf: Uint8Array) => void
+  sendDataSequence: (callback: sendDataSeqCallback) => void
 }
+
+export type sendDataSeqCallback = (send: (buf: Uint8Array) => void) => Promise<void>
 
 export const MIDIContext = React.createContext<MIDIContextData>({} as any)
 MIDIContext.displayName = 'MIDIContext'
@@ -73,6 +76,7 @@ export default class MIDIProvider extends React.Component<Props, State> {
       setInputDevice: this.setInputDevice,
       setOutputDevice: this.setOutputDevice,
       sendData: this.sendData,
+      sendDataSequence: this.sendDataSequence,
     }}>{this.props.children}</MIDIContext.Provider>
   }
 
@@ -96,10 +100,26 @@ export default class MIDIProvider extends React.Component<Props, State> {
     if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
 
     this.setState({ sendingData: true })
-    // fake timeout - WebMIDI API doesn't have events to tell when the sending is finished
-    setTimeout(() => this.setState({ sendingData: false }), 4000)
+    // Fake timeout - WebMIDI API doesn't have events to tell when the sending is finished, unfortunately,
+    // so we approximate how long the sending takes - roughly (bytes / 3) milliseconds.
+    let fakeTimeout = Math.round(Math.max(1000, buf.length * 0.33))
+    setTimeout(() => this.setState({ sendingData: false }), fakeTimeout)
 
     this.state.outputDevice.send(buf)
+  }
+
+  private sendDataSequence = (seqFunc: sendDataSeqCallback): void => {
+    if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
+
+    this.setState({ sendingData: true })
+
+    seqFunc((buf: Uint8Array) => {
+      this.state.outputDevice?.send(buf)
+    })
+      .catch(handleError)
+      .finally(() => {
+        this.setState({ sendingData: false })
+      })
   }
 
   private onMidiStateChanged = (e: any) => {

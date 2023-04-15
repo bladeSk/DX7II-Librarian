@@ -5,7 +5,7 @@ import { fromBase64, toBase64 } from '@aws-sdk/util-base64'
 import logoURL from 'assets/dx7ii.png'
 import QuestionSvg from 'assets/icons/question-circle.svg'
 import GithubSvg from 'assets/icons/github-fill.svg'
-import MIDIProvider, { MIDIContext } from 'components/utility/MIDIProvider/MIDIProvider'
+import MIDIProvider, { MIDIContext, MIDIContextData } from 'components/utility/MIDIProvider/MIDIProvider'
 import MIDISelector from 'components/utility/MIDISelector/MIDISelector'
 import { FileWithMeta } from 'components/carts/CartViewer/CartViewerBase'
 import CartViewer from 'components/carts/CartViewer/CartViewer'
@@ -17,6 +17,7 @@ import MenuButton, { MenuButtonAction } from 'components/basic/MenuButton/MenuBu
 import { DX7VoiceCart } from 'core/models/DX7VoiceCart'
 import { DX7PerfCart } from 'core/models/DX7PerfCart'
 import { handleError } from 'core/utils/errorHandling'
+import { hex2bin } from 'core/utils/binUtils'
 import './App.scss'
 
 export interface Props {
@@ -82,11 +83,13 @@ export default class App extends React.PureComponent<Props, State> {
 
             <MIDISelector />
 
-            <MenuButton className="App__mainMenuButton"
-              hAlign="r"
-              actions={MENU_ACTIONS}
-              onAction={this.handleMenuAction}
-            />
+            <MIDIContext.Consumer>{(midiCtx) => <>
+              <MenuButton className="App__mainMenuButton"
+                hAlign="r"
+                actions={MENU_ACTIONS}
+                onAction={this.handleMenuAction.bind(this, midiCtx)}
+              />
+            </>}</MIDIContext.Consumer>
           </header>
 
           <main className={clsx('App__body', isEmpty && 'App__body_empty')}>
@@ -232,7 +235,7 @@ export default class App extends React.PureComponent<Props, State> {
     this.handleHelpClick()
   }
 
-  private handleMenuAction = (actionId: string) => {
+  private handleMenuAction(midiCtx: MIDIContextData, actionId: string) {
     if (actionId == 'newVoiceCart') {
       this.openFiles([{
         name: 'New Voice Cart',
@@ -264,9 +267,47 @@ export default class App extends React.PureComponent<Props, State> {
         `${import.meta.env.BASE_URL}/carts/DX7 ROM1A.syx`,
         `${import.meta.env.BASE_URL}/carts/DX7 ROM1B.syx`,
       ])
+    } else if (actionId == 'reqDX7IIA') {
+      this.executeRequestVoiceDataSequence(midiCtx, 0)
+    } else if (actionId == 'reqDX7IIB') {
+      this.executeRequestVoiceDataSequence(midiCtx, 1)
+    } else if (actionId == 'reqDX7IIperf') {
+      midiCtx.sendData(hex2bin('F0 43 20 7E 4C 4D 20 20 38 39 37 33 50 4D F7'))
+    } else if (actionId == 'reqDX7') {
+      midiCtx.sendData(hex2bin('F0 43 20 09 F7'))
     } else if (actionId == 'openHelp') {
       this.handleHelpClick()
     }
+  }
+
+  private executeRequestVoiceDataSequence(midiCtx: MIDIContextData, bank: 0 | 1) {
+    midiCtx.sendDataSequence(async (send) => {
+      // Set DX7 to bank 0 (1-32) or bank 1 (33-64)
+      let bankRequest = hex2bin('F0 43 10 19 4C 00 F7') // both 4C and 4D seem to be valid 🤔
+      bankRequest[5] = bank
+      send(bankRequest)
+
+      // Wait for a bit (important!)
+      await new Promise(res => setTimeout(res, 500))
+
+      // When exporting voice data via DX7II menus, SysEx with a bank number is received first.
+      // We can't request that (AFAIK), so we need to fake receiving it.
+      let fakeBankResponse = hex2bin('F0 43 10 19 4D 00 F7')
+      fakeBankResponse[5] = bank
+      midiCtx.inputDevice?.dispatchEvent(new MessageEvent('midimessage', { data: fakeBankResponse }))
+
+      // Request FKS data
+      send(hex2bin('F0 43 20 7E 4C 4D 20 20 46 4B 53 59 43 20 F7'))
+
+      // Wait for a bit
+      await new Promise(res => setTimeout(res, 6000))
+
+      // Request AMEM and VMEM (no need to wait between these)
+      send(hex2bin('F0 43 20 06 F7   F0 43 20 09 F7'))
+
+      // Show the UI blocking screen for a few seconds until the receiving is finished
+      await new Promise(res => setTimeout(res, 2000))
+    })
   }
 
   private handleFileWindowClose = (file: FileWithMeta) => {
@@ -388,6 +429,11 @@ const MENU_ACTIONS: MenuButtonAction[] = [
   { id: 'importDX7IIA', label: 'Load DX7II factory presets 1' },
   { id: 'importDX7IIB', label: 'Load DX7II factory presets 2' },
   { id: 'importDX7', label: 'Load DX7 ROM 1' },
+  { id: '---', label: '' },
+  { id: 'reqDX7IIA', label: 'Request voices 1-32 from a DX7II' },
+  { id: 'reqDX7IIB', label: 'Request voices 33-64 from a DX7II' },
+  { id: 'reqDX7IIperf', label: 'Request performances from a DX7II' },
+  { id: 'reqDX7', label: 'Request voices from a DX7' },
   { id: '---', label: '' },
   { id: 'openHelp', label: 'Help' },
 ]

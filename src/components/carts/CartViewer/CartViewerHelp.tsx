@@ -75,7 +75,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
         </p>
         <p>
           Voices can be received directly from a DX7 via MIDI {}
-          (see <a href="#" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting voices from a DX7</a>).
+          (see <a href="#" onClick={this.handleSectionLinkClick.bind(this, 'receive')}>Exporting (backing up) voices from a DX7</a>).
         </p>
 
         <p>You can also import performance cartridges and microtunings in the same way.</p>
@@ -84,7 +84,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
       <CollapsibleSection title="Sending voices to a DX7"
         sectionId="send" expanded={exp == 'send'} onToggle={this.handleSectionToggle}
       >
-        <p>You need to enable receiving on a DX7 each time you turn it on:</p>
+        <p>You need to disable memory protection on a DX7 each time you turn it on:</p>
 
         <p><b className="accent1">DX7II</b></p>
         <ul>
@@ -103,17 +103,22 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
         <p>Click a cartridge window's menu button and select <i>Send via MIDI</i>. The synth should display <i>Receiving MIDI data</i>.</p>
       </CollapsibleSection>
 
-      <CollapsibleSection title="Exporting voices from a DX7"
+      <CollapsibleSection title="Exporting (backing up) voices from a DX7"
         sectionId="receive" expanded={exp == 'receive'} onToggle={this.handleSectionToggle}
       >
-        <p><b className="accent1">DX7II</b></p>
+        <p><b className="accent1">Easy method</b></p>
+        <ul>
+          <li>use the top right menu to request voices or performances from a connected DX7II</li>
+        </ul>
+
+        <p><b className="accent1">Manual method - DX7II</b></p>
         <ul>
           <li>press EDIT</li>
           <li>press button #32 (MIDI 2) - until you see "Voice Transmit"</li>
           <li>select 1-32 or 33-64, press yes twice</li>
         </ul>
 
-        <p><b className="accent1">DX7</b></p>
+        <p><b className="accent1">Manual method - DX7</b></p>
         <ul>
           <li>press FUNCTION</li>
           <li>press button #8 until you see SYS INFO, change SYS INFO UNAVAIL to AVAIL by pressing YES</li>
@@ -139,7 +144,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
       >
         <ul>
           <li>Undo/redo steps</li>
-          <li>Preview voices</li>
+          <li>Voice preview</li>
           <li>(maybe) Editor for ALL the parameters</li>
         </ul>
       </CollapsibleSection>
