@@ -48,11 +48,17 @@ export class DX7VoiceCart {
       return cart
     } else if (this.isPartialDX7IICart(data)) {
       let cart = new DX7VoiceCart()
+      let offset = 0
+
+      if (data.length == 5239) {
+        offset = 7
+        if (dataMatches(DX7II_HEADER_2, data)) cart.bank = 1
+      }
 
       for (let i = 0; i < 32; i++) {
         cart.voices[i] = new DX7Voice(
-          cut(data, 1128 + VMEM_HEADER.length + 128 * i, 128),
-          cut(data, 0 + AMEM_HEADER.length + 35 * i, 35),
+          cut(data, offset + 1128 + VMEM_HEADER.length + 128 * i, 128),
+          cut(data, offset + AMEM_HEADER.length + 35 * i, 35),
         )
       }
 
@@ -164,11 +170,18 @@ export class DX7VoiceCart {
 
   /** Just AMEM and VMEM, used by DXconvert */
   private static isPartialDX7IICart(data: Uint8Array): boolean {
-    if (data.length != 5232) return false
-    if (!dataMatches(AMEM_HEADER, data, 0)) return false
-    if (!dataMatches(VMEM_HEADER, data, 1128)) return false
-
-    return true
+    if (data.length == 5239) { // bank header + AMEM + VMEM
+      if (!dataMatches(DX7II_HEADER_1, data, 0) && !dataMatches(DX7II_HEADER_2, data, 0)) return false
+      if (!dataMatches(AMEM_HEADER, data, 7)) return false
+      if (!dataMatches(VMEM_HEADER, data, 7 + 1128)) return false
+      return true
+    } else if (data.length == 5232) { // AMEM + VMEM
+      if (!dataMatches(AMEM_HEADER, data, 0)) return false
+      if (!dataMatches(VMEM_HEADER, data, 1128)) return false
+      return true
+    } else {
+      return false
+    }
   }
 }
 
