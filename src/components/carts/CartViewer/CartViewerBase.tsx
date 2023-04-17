@@ -17,7 +17,7 @@ export interface CartViewerProps<T> {
     data: any,
     onDataChange: (oldData: any, newData: any) => void,
   ) => void
-  onSendSysEx?: (data: Uint8Array) => void,
+  onSendSysEx?: (data: Uint8Array) => Promise<void>,
 }
 
 export interface CartViewerState<T> {
@@ -99,11 +99,7 @@ export default abstract class CartViewerBase<
   }
 
   protected doActionSendSysEx(data: Uint8Array) {
-    try {
-      this.props.onSendSysEx?.(data)
-    } catch (err) {
-      handleError(err)
-    }
+    this.props.onSendSysEx?.(data).catch(handleError)
   }
 
   protected doActionSave(data: Uint8Array) {

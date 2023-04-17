@@ -112,7 +112,7 @@ export default class App extends React.PureComponent<Props, State> {
                 />
               })}
 
-              {midiCtx.sendingData && <div className="App__sendingDataOverlay">Sending SysEx data...</div>}
+              {midiCtx.sendingData && <div className="App__sendingDataOverlay">Sending MIDI SysEx data...</div>}
             </>}</MIDIContext.Consumer>
           </main>
 
@@ -272,9 +272,9 @@ export default class App extends React.PureComponent<Props, State> {
     } else if (actionId == 'reqDX7IIB') {
       this.executeRequestVoiceDataSequence(midiCtx, 1)
     } else if (actionId == 'reqDX7IIperf') {
-      midiCtx.sendData(hex2bin('F0 43 20 7E 4C 4D 20 20 38 39 37 33 50 4D F7'))
+      midiCtx.sendData(hex2bin('F0 43 20 7E 4C 4D 20 20 38 39 37 33 50 4D F7')).catch(handleError)
     } else if (actionId == 'reqDX7') {
-      midiCtx.sendData(hex2bin('F0 43 20 09 F7'))
+      midiCtx.sendData(hex2bin('F0 43 20 09 F7')).catch(handleError)
     } else if (actionId == 'openHelp') {
       this.handleHelpClick()
     }
@@ -307,7 +307,7 @@ export default class App extends React.PureComponent<Props, State> {
 
       // Show the UI blocking screen for a few seconds until the receiving is finished
       await new Promise(res => setTimeout(res, 2000))
-    })
+    }).catch(handleError)
   }
 
   private handleFileWindowClose = (file: FileWithMeta) => {

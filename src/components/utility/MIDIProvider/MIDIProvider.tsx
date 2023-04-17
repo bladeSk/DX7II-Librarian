@@ -19,8 +19,8 @@ export interface MIDIContextData {
   sendingData: boolean
   setInputDevice: (deviceId: string) => void
   setOutputDevice: (deviceId: string) => void
-  sendData: (buf: Uint8Array) => void
-  sendDataSequence: (callback: sendDataSeqCallback) => void
+  sendData: (buf: Uint8Array) => Promise<void>
+  sendDataSequence: (callback: sendDataSeqCallback) => Promise<void>
 }
 
 export type sendDataSeqCallback = (send: (buf: Uint8Array) => void) => Promise<void>
@@ -96,30 +96,38 @@ export default class MIDIProvider extends React.Component<Props, State> {
     })
   }
 
-  private sendData = (buf: Uint8Array): void => {
+  private sendData = async (buf: Uint8Array): Promise<void> => {
     if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
 
     this.setState({ sendingData: true })
-    // Fake timeout - WebMIDI API doesn't have events to tell when the sending is finished, unfortunately,
-    // so we approximate how long the sending takes - roughly (bytes / 3) milliseconds.
-    let fakeTimeout = Math.round(Math.max(1000, buf.length * 0.33))
-    setTimeout(() => this.setState({ sendingData: false }), fakeTimeout)
 
-    this.state.outputDevice.send(buf)
+    try {
+      this.state.outputDevice.send(buf)
+    } catch(err) {
+      this.setState({ sendingData: false })
+      throw err
+    }
+
+    // Fake timeout - WebMIDI API doesn't have events to tell when the sending is finished, unfortunately,
+    // so we approximate how long the sending takes - roughly bytes * 0.36 milliseconds.
+    let fakeTimeoutMs = Math.round(Math.max(1000, buf.length * 0.36))
+    await new Promise(res => setTimeout(res, fakeTimeoutMs))
+
+    this.setState({ sendingData: false })
   }
 
-  private sendDataSequence = (seqFunc: sendDataSeqCallback): void => {
+  private sendDataSequence = async (execSequence: sendDataSeqCallback): Promise<void> => {
     if (!this.state.outputDevice) throw new Error('No output MIDI device selected.')
 
     this.setState({ sendingData: true })
 
-    seqFunc((buf: Uint8Array) => {
-      this.state.outputDevice?.send(buf)
-    })
-      .catch(handleError)
-      .finally(() => {
-        this.setState({ sendingData: false })
+    try {
+      await execSequence((buf: Uint8Array) => {
+        this.state.outputDevice?.send(buf)
       })
+    } finally {
+      this.setState({ sendingData: false })
+    }
   }
 
   private onMidiStateChanged = (e: any) => {
