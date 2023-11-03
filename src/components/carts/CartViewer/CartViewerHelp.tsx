@@ -132,8 +132,8 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
         sectionId="links" expanded={exp == 'links'} onToggle={this.handleSectionToggle}
       >
         <p><a target="_blank" href="https://github.com/bladeSk/DX7II-Librarian">Project Github</a> - report issues here</p>
-        <p><a target="_blank" href={`${import.meta.env.BASE_URL}/files/DX7II-collection.zip`}>Download a collection of DX7II voices and performances</a></p>
-        <p><a target="_blank" href={`${import.meta.env.BASE_URL}/files/DX7II-factory-rom.zip`}>Download DX7II factory cartridge</a></p>
+        <p><a target="_blank" href={`${import.meta.env.BASE_URL}files/DX7II-collection.zip`}>Download a collection of DX7II voices and performances</a></p>
+        <p><a target="_blank" href={`${import.meta.env.BASE_URL}files/DX7II-factory-rom.zip`}>Download DX7II factory cartridge</a></p>
         <p><a target="_blank" href="https://yamahablackboxes.com/collection/yamaha-dx7-synthesizer/patches/">Original DX7 voice cartridges</a></p>
         <p><a target="_blank" href="https://www.thisdx7cartdoesnotexist.com/">Generate random DX7 cartridges</a></p>
         <p><a target="_blank" href="https://asb2m10.github.io/dexed/">Dexed - DX7 virtual synth and voice editor</a> (DX7 mk.1 voices only)</p>

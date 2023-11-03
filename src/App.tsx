@@ -222,7 +222,7 @@ export default class App extends React.PureComponent<Props, State> {
   private async openInitialProject() {
     this.setState({ sysExFiles: [] })
 
-    await this.openRemoteFiles([`${import.meta.env.BASE_URL}/carts/Librarian Demo Cart.syx`], { x: 20, y: 20 })
+    await this.openRemoteFiles([`${import.meta.env.BASE_URL}carts/Librarian Demo Cart.syx`], { x: 20, y: 20 })
 
     await this.openFiles([{
       name: 'Empty Voice Cart',
@@ -249,23 +249,23 @@ export default class App extends React.PureComponent<Props, State> {
         origin: 'user',
       }])
     } else if (actionId == 'importDemo') {
-      this.openRemoteFiles([`${import.meta.env.BASE_URL}/carts/Librarian Demo Cart.syx`])
+      this.openRemoteFiles([`${import.meta.env.BASE_URL}carts/Librarian Demo Cart.syx`])
     } else if (actionId == 'importDX7IIA') {
       this.openRemoteFiles([
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 1 perf.syx`,
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 1 33-64.syx`,
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 1 1-32.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 1 perf.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 1 33-64.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 1 1-32.syx`,
       ])
     } else if (actionId == 'importDX7IIB') {
       this.openRemoteFiles([
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 2 perf.syx`,
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 2 33-64.syx`,
-        `${import.meta.env.BASE_URL}/carts/DX7II factory bank 2 1-32.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 2 perf.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 2 33-64.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7II factory bank 2 1-32.syx`,
       ])
     } else if (actionId == 'importDX7') {
       this.openRemoteFiles([
-        `${import.meta.env.BASE_URL}/carts/DX7 ROM1A.syx`,
-        `${import.meta.env.BASE_URL}/carts/DX7 ROM1B.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7 ROM1A.syx`,
+        `${import.meta.env.BASE_URL}carts/DX7 ROM1B.syx`,
       ])
     } else if (actionId == 'reqDX7IIA') {
       this.executeRequestVoiceDataSequence(midiCtx, 0)

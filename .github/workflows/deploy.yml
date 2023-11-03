@@ -39,7 +39,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build
-        run: yarn build --base=/DX7II-Librarian
+        run: yarn build --base=/DX7II-Librarian/
         env:
           VITE_HTML_APPEND: ${{vars.VITE_HTML_APPEND}}
       - name: Setup Pages
