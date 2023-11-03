@@ -1,6 +1,6 @@
 import React from 'react'
 import { MIDIContext } from '../MIDIProvider/MIDIProvider'
-import { hex2bin, mergeUint8Arrays, uint8ArraysEqual } from 'core/utils/binUtils'
+import { hex2bin, mergeUint8Arrays, dataMatchesN6 } from 'core/utils/binUtils'
 
 export interface Props {
   className?: string
@@ -54,8 +54,8 @@ export default class SysExReceiver extends React.PureComponent<Props, State> {
     if (e.data.length < 2) return
     if (e.data[0] != 0xf0) return
 
-    if (uint8ArraysEqual(e.data, DX7II_HEADER_1) || uint8ArraysEqual(e.data, DX7II_HEADER_2)) {
-      console.log('Receiving DX7II voice cart, expecting 3 more parts')
+    if (dataMatchesN6(DX7II_HEADER_1, e.data) || dataMatchesN6(DX7II_HEADER_2, e.data)) {
+      console.log('Receiving DX7II voice cart, expecting 2-3 more parts')
 
       if (this.voiceCartRecvTimeout) clearTimeout(this.voiceCartRecvTimeout)
       this.voiceCartRecvTimeout = undefined
@@ -84,6 +84,11 @@ export default class SysExReceiver extends React.PureComponent<Props, State> {
 
     if (totalLen == 21404) {
       console.log('Received all parts of a DX7II voice cart')
+
+      this.props.onSysExReceived(mergeUint8Arrays(this.voiceCartBuffer))
+      this.voiceCartBuffer = []
+    } else if (totalLen == 5239) {
+      console.log('Received all parts of a partial DX7II voice cart')
 
       this.props.onSysExReceived(mergeUint8Arrays(this.voiceCartBuffer))
       this.voiceCartBuffer = []

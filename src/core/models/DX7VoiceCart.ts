@@ -1,4 +1,4 @@
-import { calcChecksum, cut, dataMatches, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
+import { calcChecksum, cut, dataMatchesN6, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
 import { DX7Voice } from './DX7Voice'
 
 /**
@@ -35,7 +35,7 @@ export class DX7VoiceCart {
     } else if (this.isDX7IICart(data)) {
       let cart = new DX7VoiceCart()
 
-      if (dataMatches(DX7II_HEADER_2, data, 0)) cart.bank = 1
+      if (dataMatchesN6(DX7II_HEADER_2, data, 0)) cart.bank = 1
 
       for (let i = 0; i < 32; i++) {
         cart.voices[i] = new DX7Voice(
@@ -52,7 +52,7 @@ export class DX7VoiceCart {
 
       if (data.length == 5239) {
         offset = 7
-        if (dataMatches(DX7II_HEADER_2, data)) cart.bank = 1
+        if (dataMatchesN6(DX7II_HEADER_2, data)) cart.bank = 1
       }
 
       for (let i = 0; i < 32; i++) {
@@ -152,18 +152,18 @@ export class DX7VoiceCart {
 
   private static isDX7Cart(data: Uint8Array): boolean {
     if (data.length != 4104) return false
-    if (!dataMatches(VMEM_HEADER, data, 0)) return false
+    if (!dataMatchesN6(VMEM_HEADER, data, 0)) return false
 
     return true
   }
 
   private static isDX7IICart(data: Uint8Array): boolean {
     if (data.length != 21404) return false
-    if (!dataMatches(DX7II_HEADER_1, data, 0) && !dataMatches(DX7II_HEADER_2, data, 0)) return false
+    if (!dataMatchesN6(DX7II_HEADER_1, data, 0) && !dataMatchesN6(DX7II_HEADER_2, data, 0)) return false
 
-    if (!dataMatches(FKS_HEADER, data, 7)) return false
-    if (!dataMatches(AMEM_HEADER, data, 16172)) return false
-    if (!dataMatches(VMEM_HEADER, data, 17300)) return false
+    if (!dataMatchesN6(FKS_HEADER, data, 7)) return false
+    if (!dataMatchesN6(AMEM_HEADER, data, 16172)) return false
+    if (!dataMatchesN6(VMEM_HEADER, data, 17300)) return false
 
     return true
   }
@@ -171,13 +171,13 @@ export class DX7VoiceCart {
   /** Just AMEM and VMEM, used by DXconvert */
   private static isPartialDX7IICart(data: Uint8Array): boolean {
     if (data.length == 5239) { // bank header + AMEM + VMEM
-      if (!dataMatches(DX7II_HEADER_1, data, 0) && !dataMatches(DX7II_HEADER_2, data, 0)) return false
-      if (!dataMatches(AMEM_HEADER, data, 7)) return false
-      if (!dataMatches(VMEM_HEADER, data, 7 + 1128)) return false
+      if (!dataMatchesN6(DX7II_HEADER_1, data, 0) && !dataMatchesN6(DX7II_HEADER_2, data, 0)) return false
+      if (!dataMatchesN6(AMEM_HEADER, data, 7)) return false
+      if (!dataMatchesN6(VMEM_HEADER, data, 7 + 1128)) return false
       return true
     } else if (data.length == 5232) { // AMEM + VMEM
-      if (!dataMatches(AMEM_HEADER, data, 0)) return false
-      if (!dataMatches(VMEM_HEADER, data, 1128)) return false
+      if (!dataMatchesN6(AMEM_HEADER, data, 0)) return false
+      if (!dataMatchesN6(VMEM_HEADER, data, 1128)) return false
       return true
     } else {
       return false

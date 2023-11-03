@@ -1,4 +1,4 @@
-import { calcChecksum, cut, dataMatches, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
+import { calcChecksum, cut, dataMatchesN6, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
 import { DX7Performance } from './DX7Performance'
 
 /**
@@ -23,7 +23,7 @@ export class DX7PerfCart {
 
   static createFromSyx(data: Uint8Array): DX7PerfCart | undefined {
     if (data.length != 1650) return undefined
-    if (!dataMatches(PERF_HEADER, data, 0)) return undefined
+    if (!dataMatchesN6(PERF_HEADER, data, 0)) return undefined
 
     let cart = new DX7PerfCart()
 

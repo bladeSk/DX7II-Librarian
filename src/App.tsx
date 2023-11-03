@@ -441,7 +441,7 @@ const MENU_ACTIONS: MenuButtonAction[] = [
 
 const DX7_1_CART_LENGTH = 4104
 const DX7_2_CART_LENGTH = 21404
-const DX7_2_PARTIAL_CART_LENGTH = 5232 // amem + vmem (no FKS)
+const DX7_2_PARTIAL_CART_LENGTH = 5239 // bank + amem + vmem (no FKS)
 const DX7_2_PERF_LENGTH = 1650
 const DX7_2_MCT_LENGTH = 274
 

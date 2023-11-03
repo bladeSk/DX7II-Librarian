@@ -56,8 +56,9 @@ export default class CartViewerUnknown extends CartViewerBase<null> {
           <p>Unknown SysEx data ({file.buf.length} B).</p>
           <p>Supported DX7 SysEx file sizes:</p>
           <ul>
-            <li>DX7II voices/patches: 21404 B</li>
-            <li>DX7 voices/patches: 4104 B</li>
+            <li>DX7 voices: 4104 B</li>
+            <li>DX7II voices: 21404 B</li>
+            <li>DX7II voices (without FKS): 5239 B</li>
             <li>DX7II performances: 1650 B</li>
             <li>DX7II microtuning data: 274 B</li>
           </ul>

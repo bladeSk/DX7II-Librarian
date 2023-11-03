@@ -1,4 +1,4 @@
-import { calcChecksum, dataMatches, hex2bin, mergeUint8Arrays as mergeUint8Arrays, uint8ArraysEqual } from 'core/utils/binUtils'
+import { calcChecksum, dataMatchesN6, hex2bin, mergeUint8Arrays } from 'core/utils/binUtils'
 
 /**
  * A DX7II microtuning. Only one per SysEx.
@@ -18,10 +18,10 @@ export class DX7Microtuning {
 
   static createFromSyx(data: Uint8Array): DX7Microtuning | undefined {
     if (data.length != 274) return undefined
-    if (!dataMatches(MCT_HEADER1, data, 0) && !dataMatches(MCT_HEADER2, data, 0)) return undefined
+    if (!dataMatchesN6(MCT_HEADER1, data, 0) && !dataMatchesN6(MCT_HEADER2, data, 0)) return undefined
 
     let cart = new DX7Microtuning()
-    cart.slot = dataMatches(MCT_HEADER1, data, 0) ? 0 : 1
+    cart.slot = dataMatchesN6(MCT_HEADER1, data, 0) ? 0 : 1
 
     return cart
   }
