@@ -125,13 +125,15 @@ export class DX7VoiceCart {
 
     dataArr.push(this.bank == 1 ? DX7II_HEADER_2 : DX7II_HEADER_1)
 
-    let fksData: Uint8Array = mergeUint8Arrays([
-      FKS_HEADER,
-      ...(this.voices.map(patch => patch.fksData)),
-      new Uint8Array([ 0xF7 ]),
-    ])
+    if (this.voices.some(voice => voice.dx7iiFeatures.fks)) {
+      let fksData: Uint8Array = mergeUint8Arrays([
+        FKS_HEADER,
+        ...(this.voices.map(patch => patch.fksData)),
+        new Uint8Array([ 0xF7 ]),
+      ])
 
-    dataArr.push(fksData)
+      dataArr.push(fksData)
+    }
 
     let amemData = mergeUint8Arrays([
       AMEM_HEADER,
@@ -157,6 +159,7 @@ export class DX7VoiceCart {
     return true
   }
 
+  /** Full voice data dump: FKS, AMEM and VMEM. */
   private static isDX7IICart(data: Uint8Array): boolean {
     if (data.length != 21404) return false
     if (!dataMatchesN6(DX7II_HEADER_1, data, 0) && !dataMatchesN6(DX7II_HEADER_2, data, 0)) return false

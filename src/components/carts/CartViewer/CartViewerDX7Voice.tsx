@@ -68,7 +68,10 @@ export default class CartViewerDX7Voice extends CartViewerBase<DX7VoiceCart> {
           index={i}
           number={cart.bank * 32 + i + 1}
           name={voice.name}
-          isDX7II={voice.version == 2}
+          subType={voice.version == 2
+            ? (voice.dx7iiFeatures.fks ? 'DX7II-FKS' : 'DX7II')
+            : undefined
+          }
           isEmpty={voice.name == 'INIT VOICE'}
           dataType="DX7Voice"
           data={voice}

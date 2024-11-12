@@ -39,7 +39,7 @@ export default class InlineDX7VoiceEditor extends React.PureComponent<Props, Sta
   }
 
   render(): React.ReactElement {
-    let dx7iiFeatures = this.props.voice.dx7iiFeatures
+    let dx7iiFeatures = this.props.voice.dx7iiFeaturesString
 
     return <form
       className={clsx('InlineEditor', 'InlineDX7VoiceEditor', this.props.className)}

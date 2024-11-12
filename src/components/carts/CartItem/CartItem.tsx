@@ -8,12 +8,12 @@ import './CartItem.scss'
 export interface Props<T = any> {
   className?: string
   name: string
-  isDX7II?: boolean
   isEmpty?: boolean
   index: number
   number: number
   dataType: string
   data: T
+  subType?: 'DX7II' | 'DX7II-FKS'
   dragNDropCtx: DragNDropData
   selected?: boolean
   onDrop: (dropData: T, index: number, where: 'before' | 'on') => void
@@ -85,7 +85,11 @@ export default class CartItem<T = any> extends React.PureComponent<Props<T>, Sta
 
       <div className="CartItem__name">{this.props.name}</div>
 
-      {this.props.isDX7II && <span className="CartItem__dx7ii" title="Uses DX7II features"><IISvg /></span>}
+      {this.props.subType == 'DX7II' && <span className="CartItem__dx7ii" title="Uses DX7II features"><IISvg /></span>}
+      {this.props.subType == 'DX7II-FKS' && <span
+        className="CartItem__dx7ii CartItem__dx7ii_fks"
+        title="Uses DX7II features + FKS"
+      ><IISvg /></span>}
 
       {dragNDropCtx.type == dataType && dragNDropCtx.data != data && <>
         <div className={clsx('CartItem__dragAreaBefore', draggingOverBefore && 'CartItem__dragAreaBefore_active')}

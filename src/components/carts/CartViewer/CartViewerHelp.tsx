@@ -91,6 +91,7 @@ export default class CartViewerHelp extends CartViewerBase<null, State> {
           <li>press EDIT</li>
           <li>press button #14 (UTILITY-TUNE) until you see "Memory protect"</li>
           <li>set INT (internal) to OFF</li>
+          <li className="CartViewerHelp__secondary">optional, FKS voices only - you'll need a RAM cartridge and set CRT protection to OFF</li>
         </ul>
 
         <p><b className="accent1">DX7</b></p>

@@ -25,6 +25,11 @@ export class DX7Voice {
     if (this.fksData.length != DEFAULT_FKS.length) throw new Error('Incorrect FKS length')
 
     if (!amemData) this.copyAmsFromVmemToAmem()
+
+    // clear FKS byte for default FKS data - DX7II v1.6 and newer may dump the voices without FKS data
+    if (uint8ArraysEqual(this.fksData, DEFAULT_FKS)) {
+      this.amemData[0] = 0
+    }
   }
 
   clone(): DX7Voice {
@@ -62,12 +67,12 @@ export class DX7Voice {
       (am[2] & 0b111000) >> 3,
       am[3] & 0b111,
       (am[3] & 0b111000) >> 3,
-    ) > 3) return 2
+    ) > 3) return 2 // uses AM sensitivity > 3 on any operator
 
     return 1
   }
 
-  get dx7iiFeatures(): string[] {
+  get dx7iiFeatures() {
     let am = this.amemData
     let fks = am[0]
     let ams1 = am[1] & 0b111
@@ -95,26 +100,52 @@ export class DX7Voice {
     let unisonDetune = am[34] & 0b0000111
     let fccs1 = (am[34] & 0b0001000) >> 3
 
+    return {
+      fks: !!fks,
+      ams: !!ams,
+      rndp: !!rndp,
+      vpsw: !!vpsw,
+      ltrg: !!ltrg,
+      pegr: !!pegr,
+      pitchEgScl: !!pitchEgScl,
+      mono: !!mono,
+      unison: !!unison,
+      unisonDetune: !!unisonDetune,
+      portamento: !!portamento,
+      pitchBend: !!pitchBend,
+      modWheel: !!modWheel,
+      fc1: !!fc1,
+      fc2: !!fc2,
+      bc: !!bc,
+      at: !!at,
+      mc: !!mc,
+      fccs1: !!fccs1,
+    }
+  }
+
+  get dx7iiFeaturesString(): string[] {
+    let f = this.dx7iiFeatures
+
     return [
-      fks && 'Fractional key scaling',
-      ams && 'AM sens. 4-7',
-      rndp && 'Random pitch',
-      vpsw && 'Pitch EG vel. sens.',
-      ltrg && 'Multi LFO',
-      pegr && 'Pitch EG range',
-      pitchEgScl && 'Pitch EG scl. rate',
-      mono && 'Monophonic',
-      unison && 'Unison poly',
-      unisonDetune && 'Unison detune',
-      portamento && 'Portamento',
-      pitchBend && 'Pitch B. params',
-      modWheel && 'Mod W. params',
-      fc1 && 'FC1 params',
-      fc2 && 'FC2 params',
-      bc && 'BC params',
-      at && 'AT params',
-      mc && 'MIDI in 1 params',
-      fccs1 && 'FC1 as CS1',
+      f.fks && 'Fractional key scaling',
+      f.ams && 'AM sens. 4-7',
+      f.rndp && 'Random pitch',
+      f.vpsw && 'Pitch EG vel. sens.',
+      f.ltrg && 'Multi LFO',
+      f.pegr && 'Pitch EG range',
+      f.pitchEgScl && 'Pitch EG scl. rate',
+      f.mono && 'Monophonic',
+      f.unison && 'Unison poly',
+      f.unisonDetune && 'Unison detune',
+      f.portamento && 'Portamento',
+      f.pitchBend && 'Pitch B. params',
+      f.modWheel && 'Mod W. params',
+      f.fc1 && 'FC1 params',
+      f.fc2 && 'FC2 params',
+      f.bc && 'BC params',
+      f.at && 'AT params',
+      f.mc && 'MIDI in 1 params',
+      f.fccs1 && 'FC1 as CS1',
     ].filter(Boolean) as string[]
   }
 
